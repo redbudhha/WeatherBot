@@ -1,0 +1,79 @@
+package com.example.weatherbot.app.bot;
+
+import com.example.weatherbot.app.controllers.MainController;
+import com.example.weatherbot.app.utils.TelegramUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.Update;
+
+import javax.annotation.PostConstruct;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+public class WeatherBot extends TelegramWebhookBot {
+    private String webHookPath;
+    private String botUserName;
+    private String botToken;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    public WeatherBot(DefaultBotOptions botOptions) {
+        super(botOptions);
+    }
+
+    @Override
+    public String getBotToken() {
+        return botToken;
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botUserName;
+    }
+
+    @Override
+    public String getBotPath() {
+        return webHookPath;
+    }
+
+    @Override
+    public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
+        /*if (update.getMessage() != null && update.getMessage().hasText()) {
+            BotApiMethod<?> method = util.handleUpdate(update);
+            try {
+                execute(method);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }*/
+
+        return null;
+    }
+
+    public void setWebHookPath(String webHookPath) {
+        this.webHookPath = webHookPath;
+    }
+
+    public void setBotUserName(String botUserName) {
+        this.botUserName = botUserName;
+    }
+
+    public void setBotToken(String botToken) {
+        this.botToken = botToken;
+    }
+
+    @PostConstruct
+    public void setNewWebhookForTelegram() {
+        try {
+            restTemplate.getForObject(new URI(TelegramUtil.RESOURCE + botToken + "/setWebhook?url=" + webHookPath),String.class);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+
