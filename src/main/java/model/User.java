@@ -5,12 +5,12 @@ import org.telegram.telegrambots.meta.api.objects.Location;
 public class User {
     private String userName;
     private Location location;
-    private long chat_id;
+    private long chatId;
 
-    public User(String userName, Location location, long chat_id) {
+    public User(String userName, Location location, long chatId) {
         this.userName = userName;
         this.location = location;
-        this.chat_id = chat_id;
+        this.chatId = chatId;
     }
 
     public String getUserName() {
@@ -29,11 +29,11 @@ public class User {
         this.location = location;
     }
 
-    public long getChat_id() {
-        return chat_id;
+    public long getChatID() {
+        return chatId;
     }
 
-    public void setChat_id(long chat_id) {
-        this.chat_id = chat_id;
+    public void setChatId(long chat_id) {
+        this.chatId = chat_id;
     }
 }

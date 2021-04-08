@@ -2,7 +2,6 @@ package com.example.weatherbot.app.config;
 
 
 import com.example.weatherbot.app.bot.WeatherBot;
-import com.example.weatherbot.app.utils.TelegramUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
