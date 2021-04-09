@@ -59,7 +59,7 @@ public class WeatherBot extends TelegramWebhookBot {
     @PostConstruct
     public void setNewWebhookForTelegram() {
         try {
-            restTemplate.getForObject(new URI(TelegramFacade.RESOURCE + botToken + "/setWebhook?url=" + webHookPath),String.class);
+            restTemplate.getForObject(new URI(TelegramUtil.RESOURCE + botToken + "/setWebhook?url=" + webHookPath),String.class);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

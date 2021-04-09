@@ -12,21 +12,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @RestController
 public class MainController {
 
-    private final WeatherBot weatherBot;
-    private final TelegramFacade facade;
-
-    public MainController(WeatherBot weatherBot, TelegramFacade facade) {
-        this.weatherBot = weatherBot;
-        this.facade = facade;
+    private final TelegramUtil util;
+    public MainController(TelegramUtil util) {
+        this.util = util;
     }
+
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public void getUpdates(@RequestBody Update update) {
-        try {
-            weatherBot.execute(facade.handleUpdate(update));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        util.handleUpdate(update);
     }
 }
 
