@@ -25,6 +25,7 @@ public class MainController {
         try {
             weatherBot.execute(facade.handleUpdate(update));
         } catch (TelegramApiException e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
