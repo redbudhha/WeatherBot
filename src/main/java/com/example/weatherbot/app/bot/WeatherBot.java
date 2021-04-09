@@ -1,7 +1,6 @@
 package com.example.weatherbot.app.bot;
 
-import com.example.weatherbot.app.controllers.MainController;
-import com.example.weatherbot.app.utils.TelegramUtil;
+import com.example.weatherbot.app.utils.TelegramFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
@@ -17,7 +16,7 @@ public class WeatherBot extends TelegramWebhookBot {
     private String webHookPath;
     private String botUserName;
     private String botToken;
-
+    
     @Autowired
     private RestTemplate restTemplate;
 
@@ -42,15 +41,6 @@ public class WeatherBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        /*if (update.getMessage() != null && update.getMessage().hasText()) {
-            BotApiMethod<?> method = util.handleUpdate(update);
-            try {
-                execute(method);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        }*/
-
         return null;
     }
 

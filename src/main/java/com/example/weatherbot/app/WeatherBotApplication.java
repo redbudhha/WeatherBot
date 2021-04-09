@@ -13,7 +13,6 @@ public class WeatherBotApplication {
     public static void main(String[] args) {
         ApiContextInitializer.init();
         SpringApplication.run(WeatherBotApplication.class, args);
-
     }
     @Bean
     public RestTemplate restTemplate(){
