@@ -1,4 +1,4 @@
-package com.telegram.example.weatherbot.config;
+package com.example.weatherbot.app.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

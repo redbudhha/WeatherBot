@@ -1,17 +1,16 @@
-package com.telegram.example.weatherbot.dto;
+package com.example.weatherbot.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 
-@Getter
-@Setter
+
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ForecastDto {
 
@@ -48,6 +47,54 @@ public class ForecastDto {
     private void unpackWeather(List<Map<String, Object>> weather) {
         this.condition.add((String) weather.get(0).get("main"));
 
+    }
+
+    public List<String> getCondition() {
+        return condition;
+    }
+
+    public void setCondition(List<String> condition) {
+        this.condition = condition;
+    }
+
+    public List<Double> getDayTemp() {
+        return dayTemp;
+    }
+
+    public void setDayTemp(List<Double> dayTemp) {
+        this.dayTemp = dayTemp;
+    }
+
+    public List<Double> getNightTemp() {
+        return nightTemp;
+    }
+
+    public void setNightTemp(List<Double> nightTemp) {
+        this.nightTemp = nightTemp;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public int getDays() {
+        return days;
+    }
+
+    public void setDays(int days) {
+        this.days = days;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @Override

@@ -7,19 +7,16 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+
 public class WeatherBot extends TelegramWebhookBot {
     private String webHookPath;
     private String botUserName;
     private String botToken;
-
-
-
 
 
     @Autowired
@@ -64,7 +61,7 @@ public class WeatherBot extends TelegramWebhookBot {
     @PostConstruct
     public void setNewWebhookForTelegram() {
         try {
-            restTemplate.getForObject(new URI(TelegramUtil.RESOURCE + botToken + "/setWebhook?url=" + webHookPath),String.class);
+            restTemplate.getForObject(new URI(TelegramFacade.RESOURCE + botToken + "/setWebhook?url=" + webHookPath),String.class);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

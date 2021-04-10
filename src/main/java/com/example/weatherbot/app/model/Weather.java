@@ -1,9 +1,9 @@
-package com.telegram.example.weatherbot.model;
+package com.example.weatherbot.app.model;
 
-import com.telegram.example.weatherbot.dto.WeatherDto;
-import lombok.Getter;
+import com.example.weatherbot.app.dto.WeatherDto;
 
-@Getter
+
+
 public final class Weather {
     private final String cityName;
     private final String temp;
@@ -16,6 +16,22 @@ public final class Weather {
         this.temp = String.format("%.0f°C", dto.getTemp());
         this.pressure = String.format("%.0f мм рт.ст.", dto.getPressure() * 3 / 4.0);
         this.humidity = dto.getHumidity() + "%";
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public String getTemp() {
+        return temp;
+    }
+
+    public String getPressure() {
+        return pressure;
+    }
+
+    public String getHumidity() {
+        return humidity;
     }
 
     @Override

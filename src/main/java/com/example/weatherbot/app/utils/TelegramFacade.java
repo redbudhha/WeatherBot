@@ -1,10 +1,15 @@
 package com.example.weatherbot.app.utils;
 
+import com.example.weatherbot.app.dto.WeatherDto;
+import com.example.weatherbot.app.model.User;
+import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.service.UserService;
+import com.example.weatherbot.app.service.WeatherService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -12,17 +17,18 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class TelegramFacade {
     public static final String RESOURCE = "https://api.telegram.org/bot";
     private final UserService userService;
+    private final WeatherService weatherService;
+    Map<Long, User> users = new HashMap<>();  // база не подключена, пока использую это
 
-    public TelegramFacade(UserService userService) {
+    public TelegramFacade(UserService userService, WeatherService service) {
         this.userService = userService;
+        this.weatherService = service;
     }
 
     public BotApiMethod<?> handleUpdate(Update update) {
@@ -37,8 +43,8 @@ public class TelegramFacade {
                 }
             }
             if (update.getMessage().hasLocation()) {
-                boolean success = userService.createUser(update);
-                System.out.println(success);
+                User user = userService.createUser(update);
+                users.put(user.getChatId(), user);
                 messageToUser = sendButtonsForChoosingDay();
             }
             messageToUser.setChatId(update.getMessage().getChatId());
@@ -87,33 +93,48 @@ public class TelegramFacade {
         return new SendMessage().setReplyMarkup(keyboardMarkup).setText("What day would you like to get the weather forecast?");
     }
 
-    public SendMessage sendForRequestLocation() {
+    public SendMessage sendForRequestLocation(long chatId) {
         KeyboardRow keyboardRow = new KeyboardRow();
         keyboardRow.add(new KeyboardButton()
                 .setRequestLocation(true)
                 .setText("Send location"));
         List<KeyboardRow> rows = new ArrayList<>(Collections.singletonList(keyboardRow));
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup().setKeyboard(rows).setOneTimeKeyboard(true).setResizeKeyboard(true);
-        return new SendMessage().setReplyMarkup(markup).setText("For sending location click 'Send location'");
+        return new SendMessage().setChatId(chatId).setReplyMarkup(markup).setText("For sending location click 'Send location'");
     }
 
     public SendMessage processCallBackQuery(CallbackQuery query) {
         SendMessage messageToUser = new SendMessage();
         String data = query.getData();
+        Long chatId = query.getMessage().getChatId();
+        messageToUser.setChatId(chatId);
         if (data.equals("location")) {
-            messageToUser = sendForRequestLocation();
+            return sendForRequestLocation(chatId);
         } else if (data.equals("city")) {
-            messageToUser.setText("Insert city");
-        } else if (data.equals("today")) {
-            //вызов метода из weather api
-        } else if (data.equals("3")) {
-            //вызов метода из W api
-        } else if (data.equals("5")) {
-            //вызов w api
-        }
-        messageToUser.setChatId(query.getMessage().getChatId());
-        return messageToUser;
-    }
+            return messageToUser.setText("Insert city");
+        } else {
+            User user = users.get(chatId);
+            Location location = user.getLocation();
+            WeatherDto weatherDto = null;
+            switch (data) {
+                case "today":
+                    weatherDto = weatherService.getCurrentWeatherFromOWByLocation(location.getLatitude(), location.getLongitude());
+                    break;
+                case "3":
+                    weatherDto = weatherService.getForecastWeatherFromOWByLocation(location.getLatitude(), location.getLongitude(), 3);
+                    break;
+                case "5":
+                    weatherDto = weatherService.getForecastWeatherFromOWByLocation(location.getLatitude(), location.getLongitude(), 5);
+                    break;
+            }
+            Weather weather = new Weather(weatherDto);
+            if (Objects.nonNull(weather)) {
+                messageToUser.setText(weather.toString());
 
+            }
+        }
+        return messageToUser;
+
+    }
 }
 

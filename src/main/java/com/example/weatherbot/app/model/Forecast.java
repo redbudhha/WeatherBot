@@ -1,14 +1,13 @@
-package com.telegram.example.weatherbot.model;
+package com.example.weatherbot.app.model;
 
-import com.telegram.example.weatherbot.dto.ForecastDto;
-import lombok.Getter;
+import com.example.weatherbot.app.dto.ForecastDto;
+
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Getter
 public class Forecast {
     private final String cityName;
     private final int days;
@@ -26,6 +25,18 @@ public class Forecast {
                     LocalDate.now().plusDays(i)
             ));
         }
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public int getDays() {
+        return days;
+    }
+
+    public List<DayForecast> getForecasts() {
+        return forecasts;
     }
 
     public static class DayForecast {
