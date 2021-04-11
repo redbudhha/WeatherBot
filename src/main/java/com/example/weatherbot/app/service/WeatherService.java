@@ -3,8 +3,10 @@ package com.example.weatherbot.app.service;
 import com.example.weatherbot.app.dto.ForecastDto;
 import com.example.weatherbot.app.dto.WeatherDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -13,39 +15,52 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class WeatherService {
     private final RestTemplate restTemplate;
+    private final String apiTokenOpenWeather = "36daa3f6889a39abb62113bafa51611b";
+    private final String apiTokenYandexWeather = "fffff866-6141-46fb-aa27-9cc943366a62";
+    private final String apiTokenWeatherStack = "549c72be601e1286a925e1fdce16bf7b";
 
-    private String token = "267f70c609cff8699fdc74f50434b9c4";
 
     @Autowired
     public WeatherService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
+    public boolean cityIsNotEmpty(String cityName) {
+        if (StringUtils.isEmpty(cityName))
+            throw new IllegalArgumentException("Empty city name");
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
+        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "+&appid=" + apiTokenOpenWeather;
+        try {
+            return restTemplate.getForObject(url, WeatherDto.class) != null;
+        } catch (HttpClientErrorException.NotFound e) {
+            return false;
+        }
     }
 
     /*
-        current weather by city name from service "Open Weather"
-         */
+    current weather by city name from service "Open Weather"
+     */
     public WeatherDto getCurrentWeatherFromOWByCity(String cityName) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=metric&appid=" + token;
+        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "+&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, WeatherDto.class);
-
     }
 
     /*
     current weather by location name from service "Open Weather"
      */
     public WeatherDto getCurrentWeatherFromOWByLocation(Float lat, Float lon) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon
-                + "&units=metric&appid=" + token;
+        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, WeatherDto.class);
+    }
+
+    /*
+    forecast weather for the next day from by city name service "Open Weather"
+     */
+    public WeatherDto getForecastWeatherFromOWByCity(String cityName, int days) {
+        String url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + cityName + "&cnt="
+                + days + "&appid=" + apiTokenOpenWeather;
+        return restTemplate.getForObject(url, WeatherDto.class);
+
     }
 
     /*
@@ -59,21 +74,57 @@ public class WeatherService {
     }
 
     /*
-  current weather by location name from service "Яндекс погода"
+  current weather by location from service "Яндекс погода"
    */
     public WeatherDto getCurrentWeatherFromYNByLocation(Float lat, Float lon) {
         String url = "https://api.weather.yandex.ru/v2/fact?lat=" + lat + "&lon=" + lon + "&extra=true " +
-                "X-Yandex-API-Key: fffff866-6141-46fb-aa27-9cc943366a62\n";
+                "X-Yandex-API-Key:" + apiTokenYandexWeather;
         return restTemplate.getForObject(url, WeatherDto.class);
     }
 
     /*
-  forecast weather by location name from service "Яндекс погода"
+  forecast weather by location from service "Яндекс погода"
   */
     public ForecastDto getForecastWeatherFromYNByLocation(Float lat, Float lon, int days) {
         String url = "https://api.weather.yandex.ru/v2/forecast?lat=" + lat + "&lon=" + lon + "&extra=true " +
-                days + "X-Yandex-API-Key: fffff866-6141-46fb-aa27-9cc943366a62\n";
-        return restTemplate.getForObject(url, ForecastDto.class);
+                days + "X-Yandex-API-Key:" + apiTokenYandexWeather;
+        return restTemplate.getForObject(url, WeatherDto.class);
+    }
+
+    /*
+      current weather by city name from service "Weather Stack"
+       */
+    public WeatherDto getCurrentWeatherFromWSByCity(String cityName) {
+        String url = "http://api.weatherstack.com/current ? access_key =" + apiTokenWeatherStack + "& query =" + cityName;
+        return restTemplate.getForObject(url, WeatherDto.class);
+    }
+
+    /*
+  current weather by city name from service "Weather Stack"
+   */
+    public WeatherDto getCurrentWeatherFromWSByLocation(Float lan, float lon) {
+        String url = "http://api.weatherstack.com/current ? access_key =" + apiTokenWeatherStack
+                + "& query =" + lan + ", " + lon;
+        return restTemplate.getForObject(url, WeatherDto.class);
+    }
+
+
+    /*
+      forecast weather by city name from service "Weather Stack"
+       */
+    public WeatherDto getForecastWeatherFromWSByCity(String cityName, int days) {
+        String url = "http://api.weatherstack.com/forecast ? access_key =" + apiTokenWeatherStack
+                + "& query =" + cityName + "& forecast_days =" + days;
+        return restTemplate.getForObject(url, WeatherDto.class);
+    }
+
+    /*
+    forecast weather by location from service "Weather Stack"
+     */
+    public WeatherDto getForecastWeatherFromWSByLocation(Float lan, float lon, int days) {
+        String url = "http://api.weatherstack.com/forecast ? access_key =" + apiTokenWeatherStack
+                + "& query =" + lan + ", " + lon + "& forecast_days =" + days;
+        return restTemplate.getForObject(url, WeatherDto.class);
     }
 
 }

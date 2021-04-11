@@ -2,13 +2,9 @@ package com.example.weatherbot.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -99,10 +95,10 @@ public class ForecastDto {
 
     @Override
     public String toString() {
-        return "condition =" + this.condition +
-                ", dayTemp = " + this.dayTemp +
-                ", nightTemp =" + this.nightTemp +
-                ", cityName = " + this.cityName + '\'' +
+        return "condition = " + this.condition +
+                ", day temp = " + this.dayTemp +
+                ", night temp = " + this.nightTemp +
+                ", Сity name = " + this.cityName + '\'' +
                 ", days = " + this.days +
                 ", status = " + this.status +
                 '}';
