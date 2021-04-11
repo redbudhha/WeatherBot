@@ -14,11 +14,15 @@ public final class WeatherDto {
 
     private String condition;
     private double temp;
+    private double feelsLike;
     private long pressure;
     private int humidity;
     private String countryName;
     private int sunriseTime;
     private int sunsetTime;
+    private float lat;
+    private float lon;
+
 
     private int windSpeed;
     private double windDeg;
@@ -28,6 +32,12 @@ public final class WeatherDto {
 
     @JsonProperty("name")
     private String cityName;
+
+    @JsonProperty("coord")
+    private void unpackCoord(Map<String,Object> coord) {
+        this.lat = Float.parseFloat(coord.get("lat").toString());
+        this.lon = Float.parseFloat(coord.get("lon").toString());
+    }
 
 
     @JsonProperty("weather")
@@ -40,6 +50,7 @@ public final class WeatherDto {
         this.temp = Double.parseDouble(main.get("temp").toString());
         this.pressure = (Integer) main.get("pressure");
         this.humidity = (Integer) main.get("humidity");
+        this.feelsLike = Double.parseDouble(main.get("feels_like").toString());
     }
 
     @JsonProperty("sys")
@@ -142,18 +153,28 @@ public final class WeatherDto {
         this.cityName = cityName;
     }
 
-    @Override
-    public String toString() {
-        return "condition = " + this.condition + '\'' +
-                ", temp = " + this.temp +
-                ", pressure = " + this.pressure +
-                ", humidity = " + this.humidity +
-                ", sunriseTime = " + this.sunriseTime +
-                ", sunsetTime = " + this.sunsetTime +
-                ", windSpeed = " + this.windSpeed +
-                ", windDeg = " + this.windDeg +
-                ", status = " + this.status +
-                ", cityName = " + this.cityName + '\'' +
-                '}';
+
+    public double getFeelsLike() {
+        return feelsLike;
+    }
+
+    public void setFeelsLike(double feelsLike) {
+        this.feelsLike = feelsLike;
+    }
+
+    public float getLat() {
+        return lat;
+    }
+
+    public void setLat(float lat) {
+        this.lat = lat;
+    }
+
+    public float getLon() {
+        return lon;
+    }
+
+    public void setLon(float lon) {
+        this.lon = lon;
     }
 }

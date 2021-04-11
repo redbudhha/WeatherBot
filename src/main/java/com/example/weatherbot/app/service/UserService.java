@@ -13,10 +13,17 @@ public class UserService {
 
     */
     public User createUser(Update update) {
-        Location location = update.getMessage().getLocation();
+        User user;
         Long chatId = update.getMessage().getChatId();
         String userName = update.getMessage().getFrom().getUserName();
-        User user = new User(userName, location, chatId);
+        if (update.getMessage().hasLocation()) {
+            Location location = update.getMessage().getLocation();
+            User.Location loc = new User.Location(location.getLatitude(),location.getLongitude());
+            user = new User(userName,loc,chatId);
+        } else {
+            String city = update.getMessage().getText().toLowerCase();
+            user = new User(userName,city,chatId);
+        }
         return user;
     }
 

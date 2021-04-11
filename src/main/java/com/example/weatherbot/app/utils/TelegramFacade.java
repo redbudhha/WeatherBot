@@ -1,6 +1,8 @@
 package com.example.weatherbot.app.utils;
 
+import com.example.weatherbot.app.dto.ForecastDto;
 import com.example.weatherbot.app.dto.WeatherDto;
+import com.example.weatherbot.app.model.Forecast;
 import com.example.weatherbot.app.model.User;
 import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.service.UserService;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -24,6 +25,7 @@ public class TelegramFacade {
     public static final String RESOURCE = "https://api.telegram.org/bot";
     private final UserService userService;
     private final WeatherService weatherService;
+    private boolean waitingForCity = false;
     Map<Long, User> users = new HashMap<>();  // база не подключена, пока использую это
 
     public TelegramFacade(UserService userService, WeatherService service) {
@@ -42,9 +44,11 @@ public class TelegramFacade {
                     messageToUser.setText("This bot allows you to get weather forecast for today or following days.\nTo continue send /start.");
                 }
             }
-            if (update.getMessage().hasLocation()) {
+            if (update.getMessage().hasLocation() || waitingForCity) {
                 User user = userService.createUser(update);
+                System.out.println(user);
                 users.put(user.getChatId(), user);
+                waitingForCity = false;
                 messageToUser = sendButtonsForChoosingDay();
             }
             messageToUser.setChatId(update.getMessage().getChatId());
@@ -55,7 +59,9 @@ public class TelegramFacade {
         // если ни одно условие не подошло 
         if (messageToUser.getText() == null) {
             messageToUser.setText("This command isn't supported.");
+            messageToUser.setChatId(update.getMessage().getChatId());
         }
+
         return messageToUser;
     }
 
@@ -107,34 +113,58 @@ public class TelegramFacade {
         SendMessage messageToUser = new SendMessage();
         String data = query.getData();
         Long chatId = query.getMessage().getChatId();
-        messageToUser.setChatId(chatId);
         if (data.equals("location")) {
             return sendForRequestLocation(chatId);
         } else if (data.equals("city")) {
-            return messageToUser.setText("Insert city");
+            waitingForCity = true;
+            return messageToUser.setChatId(chatId).setText("Insert city");
         } else {
             User user = users.get(chatId);
-            Location location = user.getLocation();
-            WeatherDto weatherDto = null;
-            switch (data) {
-                case "today":
-                    weatherDto = weatherService.getCurrentWeatherFromOWByLocation(location.getLatitude(), location.getLongitude());
-                    break;
-                case "3":
-                    weatherDto = weatherService.getForecastWeatherFromOWByLocation(location.getLatitude(), location.getLongitude(), 3);
-                    break;
-                case "5":
-                    weatherDto = weatherService.getForecastWeatherFromOWByLocation(location.getLatitude(), location.getLongitude(), 5);
-                    break;
-            }
-            Weather weather = new Weather(weatherDto);
-            if (Objects.nonNull(weather)) {
-                messageToUser.setText(weather.toString());
-
+            if (user != null) {
+                return createRequestToWeatherApi(data, user);
+            } else {
+                throw new NullPointerException("User is not found!");
             }
         }
-        return messageToUser;
-
     }
+
+    public SendMessage createRequestToWeatherApi(String data, User user) {
+        User.Location location = user.getLocation();
+        WeatherDto weatherDto = null;
+        if (location == null) {
+            weatherDto = weatherService.getCurrentWeatherFromOWByCity(user.getCity());
+            Weather weather = new Weather(weatherDto);
+            //weatherService.save(weather);
+            location = new User.Location(weatherDto.getLat(), weatherDto.getLat());
+            user.setLocation(location);
+        }
+        SendMessage messageToUserWithWeatherForecast = new SendMessage();
+        System.out.println(user);
+        if (data.equals("today")) {
+            if (Objects.isNull(weatherDto)) {
+                weatherDto = weatherService.getCurrentWeatherFromOWByLocation(user.getLocation().getLat(), user.getLocation().getLon());
+            }
+            Weather weather = new Weather(weatherDto);
+            //weather.service(weather);
+            return messageToUserWithWeatherForecast.setText(weather.toString()).setChatId(user.getChatId());
+        } else {
+            ForecastDto forecastDto = null;
+            if (data.equals("3")) {
+                forecastDto = weatherService.getForecastWeatherFromOWByLocation(location.getLat(), location.getLon(), 3);
+                System.out.println(forecastDto);
+            } else if (data.equals("5")) {
+                forecastDto = weatherService.getForecastWeatherFromOWByLocation(location.getLat(), location.getLon(), 5);
+            }
+            if (Objects.nonNull(forecastDto)) {
+                Forecast forecast = new Forecast(forecastDto);
+                System.out.println(forecast);
+                return messageToUserWithWeatherForecast.setText(forecast.toString()).setChatId(user.getChatId());
+            }
+
+        }
+        System.out.println(weatherDto);
+        return messageToUserWithWeatherForecast.setChatId(user.getChatId()).setText("Something goes wrong");
+    }
+
 }
 

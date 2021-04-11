@@ -1,5 +1,6 @@
 package com.example.weatherbot.app.service;
 
+import com.example.weatherbot.app.dto.ForecastDto;
 import com.example.weatherbot.app.dto.WeatherDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,8 +10,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
-@Component
-@ConfigurationProperties(prefix = "openweather")
+
+@PropertySource("classpath:application.properties")
+@Configuration
 public class WeatherService {
     private final RestTemplate restTemplate;
     private final String apiTokenOpenWeather = "36daa3f6889a39abb62113bafa51611b";
@@ -64,10 +66,10 @@ public class WeatherService {
     /*
     forecast weather for the next day from by location service "Open Weather"
      */
-    public WeatherDto getForecastWeatherFromOWByLocation(Float lat, Float lon, int days) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat + "&lon="
-                + lon + "&cnt=" + days + "&appid=" + apiTokenOpenWeather;
-        return restTemplate.getForObject(url, WeatherDto.class);
+    public ForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon, int days) {
+        String url = "http://api.openweathermap.org/data/2.5/forecast/?lat=" + lat + "&lon=" + lon
+                + days + "&cnt=8&units=metric&appid=" + token;
+        return restTemplate.getForObject(url, ForecastDto.class);
 
     }
 
@@ -83,7 +85,7 @@ public class WeatherService {
     /*
   forecast weather by location from service "Яндекс погода"
   */
-    public WeatherDto getForecastWeatherFromYNByLocation(Float lat, Float lon, int days) {
+    public ForecastDto getForecastWeatherFromYNByLocation(Float lat, Float lon, int days) {
         String url = "https://api.weather.yandex.ru/v2/forecast?lat=" + lat + "&lon=" + lon + "&extra=true " +
                 days + "X-Yandex-API-Key:" + apiTokenYandexWeather;
         return restTemplate.getForObject(url, WeatherDto.class);
