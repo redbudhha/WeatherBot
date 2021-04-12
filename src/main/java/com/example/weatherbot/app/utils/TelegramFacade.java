@@ -135,7 +135,7 @@ public class TelegramFacade {
             weatherDto = weatherService.getCurrentWeatherFromOWByCity(user.getCity());
             Weather weather = new Weather(weatherDto);
             //weatherService.save(weather);
-            location = new User.Location(weatherDto.getLat(), weatherDto.getLat());
+            location = new User.Location(weatherDto.getLat(), weatherDto.getLon());
             user.setLocation(location);
         }
         SendMessage messageToUserWithWeatherForecast = new SendMessage();

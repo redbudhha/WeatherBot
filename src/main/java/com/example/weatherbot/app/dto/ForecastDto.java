@@ -1,11 +1,9 @@
 package com.example.weatherbot.app.dto;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ForecastDto {
@@ -13,8 +11,8 @@ public class ForecastDto {
     private List<String> condition = new ArrayList<>();
     private List<Double> dayTemp = new ArrayList<>();
     private List<Double> nightTemp = new ArrayList<>();
-
     private String cityName;
+    private String countryName;
 
     @JsonProperty("cnt")
     private int days;
@@ -25,9 +23,11 @@ public class ForecastDto {
     @JsonProperty("city")
     private void unpackCity(Map<String, Object> map) {
         this.cityName = map.get("name").toString();
+        this.countryName = map.get("country").toString();
     }
 
     @JsonProperty("list")
+    @SuppressWarnings("unchecked")
     private void unpackList(List<Map<String, Object>> list) {
         for (Map<String, Object> map : list) {
             unpackTemp((Map<String, Object>) map.get("temp"));
@@ -42,7 +42,6 @@ public class ForecastDto {
 
     private void unpackWeather(List<Map<String, Object>> weather) {
         this.condition.add((String) weather.get(0).get("main"));
-
     }
 
     public List<String> getCondition() {
@@ -77,6 +76,14 @@ public class ForecastDto {
         this.cityName = cityName;
     }
 
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
     public int getDays() {
         return days;
     }
@@ -98,9 +105,9 @@ public class ForecastDto {
         return "condition = " + this.condition +
                 ", day temp = " + this.dayTemp +
                 ", night temp = " + this.nightTemp +
-                ", Сity name = " + this.cityName + '\'' +
+                ", City name = " + this.cityName + '\'' +
+                ", Country name ='" + this.countryName + '\'' +
                 ", days = " + this.days +
-                ", status = " + this.status +
-                '}';
+                ", status = " + this.status;
     }
 }

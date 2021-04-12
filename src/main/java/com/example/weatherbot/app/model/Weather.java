@@ -5,7 +5,6 @@ import com.example.weatherbot.app.dto.WeatherDto;
 
 public final class Weather {
     private final String cityName;
-    private final String condition;
     private final String temp;
     private final String pressure;
     private final String humidity;

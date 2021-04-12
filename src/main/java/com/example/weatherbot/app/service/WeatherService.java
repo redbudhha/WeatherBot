@@ -3,12 +3,9 @@ package com.example.weatherbot.app.service;
 import com.example.weatherbot.app.dto.ForecastDto;
 import com.example.weatherbot.app.dto.WeatherDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
-
 
 
 @PropertySource("classpath:application.properties")
@@ -25,18 +22,6 @@ public class WeatherService {
         this.restTemplate = restTemplate;
     }
 
-    public boolean cityIsNotEmpty(String cityName) {
-        if (StringUtils.isEmpty(cityName))
-            throw new IllegalArgumentException("Empty city name");
-
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "+&appid=" + apiTokenOpenWeather;
-        try {
-            return restTemplate.getForObject(url, WeatherDto.class) != null;
-        } catch (HttpClientErrorException.NotFound e) {
-            return false;
-        }
-    }
-
     /*
     current weather by city name from service "Open Weather"
      */
@@ -49,17 +34,18 @@ public class WeatherService {
     current weather by location name from service "Open Weather"
      */
     public WeatherDto getCurrentWeatherFromOWByLocation(Float lat, Float lon) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + apiTokenOpenWeather;
+        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon
+                + "&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, WeatherDto.class);
     }
 
     /*
     forecast weather for the next day from by city name service "Open Weather"
      */
-    public WeatherDto getForecastWeatherFromOWByCity(String cityName, int days) {
+    public ForecastDto getForecastWeatherFromOWByCity(String cityName, int days) {
         String url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=" + cityName + "&cnt="
                 + days + "&appid=" + apiTokenOpenWeather;
-        return restTemplate.getForObject(url, WeatherDto.class);
+        return restTemplate.getForObject(url, ForecastDto.class);
 
     }
 
@@ -68,7 +54,7 @@ public class WeatherService {
      */
     public ForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon, int days) {
         String url = "http://api.openweathermap.org/data/2.5/forecast/?lat=" + lat + "&lon=" + lon
-                + days + "&cnt=8&units=metric&appid=" + token;
+                + days + "&cnt=8&units=metric&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, ForecastDto.class);
 
     }
@@ -88,7 +74,7 @@ public class WeatherService {
     public ForecastDto getForecastWeatherFromYNByLocation(Float lat, Float lon, int days) {
         String url = "https://api.weather.yandex.ru/v2/forecast?lat=" + lat + "&lon=" + lon + "&extra=true " +
                 days + "X-Yandex-API-Key:" + apiTokenYandexWeather;
-        return restTemplate.getForObject(url, WeatherDto.class);
+        return restTemplate.getForObject(url, ForecastDto.class);
     }
 
     /*
@@ -112,19 +98,19 @@ public class WeatherService {
     /*
       forecast weather by city name from service "Weather Stack"
        */
-    public WeatherDto getForecastWeatherFromWSByCity(String cityName, int days) {
+    public ForecastDto getForecastWeatherFromWSByCity(String cityName, int days) {
         String url = "http://api.weatherstack.com/forecast ? access_key =" + apiTokenWeatherStack
                 + "& query =" + cityName + "& forecast_days =" + days;
-        return restTemplate.getForObject(url, WeatherDto.class);
+        return restTemplate.getForObject(url, ForecastDto.class);
     }
 
     /*
     forecast weather by location from service "Weather Stack"
      */
-    public WeatherDto getForecastWeatherFromWSByLocation(Float lan, float lon, int days) {
+    public ForecastDto getForecastWeatherFromWSByLocation(Float lan, float lon, int days) {
         String url = "http://api.weatherstack.com/forecast ? access_key =" + apiTokenWeatherStack
                 + "& query =" + lan + ", " + lon + "& forecast_days =" + days;
-        return restTemplate.getForObject(url, WeatherDto.class);
+        return restTemplate.getForObject(url, ForecastDto.class);
     }
 
 }

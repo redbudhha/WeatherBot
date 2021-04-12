@@ -7,7 +7,7 @@ import java.util.List;
 
 
 public class Forecast {
-    private final List condition;
+    private final List<String> condition;
     private final String cityName;
     private final int days;
     private final List<DayForecast> forecasts = new ArrayList<>();
