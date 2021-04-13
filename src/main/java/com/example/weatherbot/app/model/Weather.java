@@ -3,7 +3,6 @@ package com.example.weatherbot.app.model;
 import com.example.weatherbot.app.dto.WeatherDto;
 
 
-
 public final class Weather {
     private final String cityName;
     private final String temp;

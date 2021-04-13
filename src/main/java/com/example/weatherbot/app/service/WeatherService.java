@@ -13,6 +13,9 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class WeatherService {
     private final RestTemplate restTemplate;
+    private final String apiTokenOpenWeather = "36daa3f6889a39abb62113bafa51611b";
+    private final String apiTokenYandexWeather = "fffff866-6141-46fb-aa27-9cc943366a62";
+    private final String apiTokenWeatherStack = "549c72be601e1286a925e1fdce16bf7b";
 
     private String token = "267f70c609cff8699fdc74f50434b9c4";
 
@@ -51,16 +54,11 @@ public class WeatherService {
     /*
     forecast weather for the next day from by location service "Open Weather"
      */
-    public ForecastDto getForecastWeatherFromOWByLocationForThreeDays(Float lat, Float lon) {
+    public ForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon, int days) {
         String url = "http://api.openweathermap.org/data/2.5/forecast/?lat=" + lat + "&lon=" + lon
-                 + "&cnt=24&units=metric&appid=" + token;
+                + days + "&cnt=8&units=metric&appid=" + token;
         return restTemplate.getForObject(url, ForecastDto.class);
 
-    }
-    public String getForecastWeatherFromOWByCityForThreeDays(String city) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + city
-                + "&cnt=8&appid=267f70c609cff8699fdc74f50434b9c4";
-        return restTemplate.getForObject(url, String.class);
     }
 
     /*
@@ -80,7 +78,6 @@ public class WeatherService {
                 days + "X-Yandex-API-Key: fffff866-6141-46fb-aa27-9cc943366a62\n";
         return restTemplate.getForObject(url, ForecastDto.class);
     }
-
 
 }
 
