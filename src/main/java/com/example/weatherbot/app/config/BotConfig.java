@@ -2,17 +2,21 @@ package com.example.weatherbot.app.config;
 
 
 import com.example.weatherbot.app.bot.WeatherBot;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
+
+import java.net.UnknownHostException;
 
 
 @Configuration
 @ConfigurationProperties(prefix = "bot")
-//@EnableMongoRepositories
 @ComponentScan
 public class BotConfig {
     private String webHookPath;
@@ -54,7 +58,7 @@ public class BotConfig {
         weatherBot.setWebHookPath(webHookPath);
         return weatherBot;
     }
-    /*
+
     @Bean
     public MongoClient mongoClient() throws UnknownHostException {
         return MongoClients.create();
@@ -64,7 +68,7 @@ public class BotConfig {
         return new MongoTemplate(mongoClient(), "db_users");
     }
 
-     */
+
 
 
 }

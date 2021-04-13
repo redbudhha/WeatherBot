@@ -150,10 +150,11 @@ public class TelegramFacade {
         } else {
             ForecastDto forecastDto = null;
             if (data.equals("3")) {
-                forecastDto = weatherService.getForecastWeatherFromOWByLocation(location.getLat(), location.getLon(), 3);
-                System.out.println(forecastDto);
+                String threeDays = weatherService.getForecastWeatherFromOWByCityForThreeDays("Москва");
+                System.out.println(threeDays);
+                return messageToUserWithWeatherForecast.setText(threeDays).setChatId(user.getChatId());
             } else if (data.equals("5")) {
-                forecastDto = weatherService.getForecastWeatherFromOWByLocation(location.getLat(), location.getLon(), 5);
+                forecastDto = weatherService.getForecastWeatherFromOWByLocationForThreeDays(location.getLat(), location.getLon());
             }
             if (Objects.nonNull(forecastDto)) {
                 Forecast forecast = new Forecast(forecastDto);

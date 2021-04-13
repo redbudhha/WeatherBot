@@ -51,11 +51,16 @@ public class WeatherService {
     /*
     forecast weather for the next day from by location service "Open Weather"
      */
-    public ForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon, int days) {
+    public ForecastDto getForecastWeatherFromOWByLocationForThreeDays(Float lat, Float lon) {
         String url = "http://api.openweathermap.org/data/2.5/forecast/?lat=" + lat + "&lon=" + lon
-                + days + "&cnt=8&units=metric&appid=" + token;
+                 + "&cnt=24&units=metric&appid=" + token;
         return restTemplate.getForObject(url, ForecastDto.class);
 
+    }
+    public String getForecastWeatherFromOWByCityForThreeDays(String city) {
+        String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + city
+                + "&cnt=8&appid=267f70c609cff8699fdc74f50434b9c4";
+        return restTemplate.getForObject(url, String.class);
     }
 
     /*
@@ -75,6 +80,7 @@ public class WeatherService {
                 days + "X-Yandex-API-Key: fffff866-6141-46fb-aa27-9cc943366a62\n";
         return restTemplate.getForObject(url, ForecastDto.class);
     }
+
 
 }
 

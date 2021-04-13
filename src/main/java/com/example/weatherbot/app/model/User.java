@@ -1,12 +1,15 @@
 package com.example.weatherbot.app.model;
 
-//@Document
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document
 public class User {
     // @Field
     private String userName;
     // @Field
     private Location location;
-    // @Id
+    @Id
     private long chatId;
     //@Field
     private String city;
@@ -45,6 +48,7 @@ public class User {
                     '}';
         }
     }
+    public User(){}
     public User(String userName, Location location, long chatId) {
         this.userName = userName;
         this.location = location;
