@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class WeatherService {
     private final RestTemplate restTemplate;
-    private final String apiTokenOpenWeather = "36daa3f6889a39abb62113bafa51611b";
     private final String apiTokenYandexWeather = "fffff866-6141-46fb-aa27-9cc943366a62";
     private final String apiTokenWeatherStack = "549c72be601e1286a925e1fdce16bf7b";
 
@@ -54,9 +53,9 @@ public class WeatherService {
     /*
     forecast weather for the next day from by location service "Open Weather"
      */
-    public ForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon, int days) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast/?lat=" + lat + "&lon=" + lon
-                + days + "&cnt=8&units=metric&appid=" + token;
+    public ForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon) {
+        String url = "http://api.openweathermap.org/data/2.5/forecast/?lat=" + lat + "&lon=" + lon +
+                "&cnt=24&units=metric&appid=" + token;
         return restTemplate.getForObject(url, ForecastDto.class);
 
     }
@@ -78,7 +77,45 @@ public class WeatherService {
                 days + "X-Yandex-API-Key: fffff866-6141-46fb-aa27-9cc943366a62\n";
         return restTemplate.getForObject(url, ForecastDto.class);
     }
+    /*
+      current weather by city name from service "Weather Stack"
+       */
+    public WeatherDto getCurrentWeatherFromWSByCity(String cityName) {
+        String url = "http://api.weatherstack.com/current ? access_key =" + apiTokenWeatherStack + "& query =" + cityName;
+        return restTemplate.getForObject(url, WeatherDto.class);
+    }
 
-}
+    /*
+  current weather by city name from service "Weather Stack"
+   */
+    public WeatherDto getCurrentWeatherFromWSByLocation(Float lan, float lon) {
+        String url = "http://api.weatherstack.com/current ? access_key =" + apiTokenWeatherStack
+                + "& query =" + lan + ", " + lon;
+        return restTemplate.getForObject(url, WeatherDto.class);
+    }
+
+
+    /*
+      forecast weather by city name from service "Weather Stack"
+       */
+        public ForecastDto getForecastWeatherFromWSByCity(String cityName, int days) {
+            String url = "http://api.weatherstack.com/forecast ? access_key =" + apiTokenWeatherStack
+                    + "& query =" + cityName + "& forecast_days =" + days;
+            return restTemplate.getForObject(url, ForecastDto.class);
+        }
+
+    /*
+    forecast weather by location from service "Weather Stack"
+     */
+        public ForecastDto getForecastWeatherFromWSByLocation(Float lan, float lon, int days) {
+                String url = "http://api.weatherstack.com/forecast ? access_key =" + apiTokenWeatherStack
+                        + "& query =" + lan + ", " + lon + "& forecast_days =" + days;
+                return restTemplate.getForObject(url, ForecastDto.class);
+            }
+
+        }
+
+
+
 
 

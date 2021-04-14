@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -34,6 +35,10 @@ public class UserService {
 
     public List<User> findAll() {
         return repository.findAll();
+    }
+    public User findUserByChatId(Long chatId) {
+        Optional<User> byId = repository.findById(chatId);
+        return byId.orElse(null);
     }
 
 

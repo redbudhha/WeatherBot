@@ -1,6 +1,7 @@
 package com.example.weatherbot.app.model;
 
 import com.example.weatherbot.app.dto.ForecastDto;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
