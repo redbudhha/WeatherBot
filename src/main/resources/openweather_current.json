@@ -1,0 +1,46 @@
+{
+    "coord": {
+        "lon": 30.2642,
+        "lat": 59.8944
+    },
+    "weather": [
+        {
+            "id": 500,
+            "main": "Rain",
+            "description": "light rain",
+            "icon": "10d"
+        }
+    ],
+    "base": "stations",
+    "main": {
+        "temp": 10,
+        "feels_like": 7.59,
+        "temp_min": 10,
+        "temp_max": 10,
+        "pressure": 1019,
+        "humidity": 66
+    },
+    "visibility": 10000,
+    "wind": {
+        "speed": 5,
+        "deg": 300
+    },
+    "rain": {
+        "1h": 0.15
+    },
+    "clouds": {
+        "all": 0
+    },
+    "dt": 1618313401,
+    "sys": {
+        "type": 1,
+        "id": 8926,
+        "country": "RU",
+        "sunrise": 1618282089,
+        "sunset": 1618333819
+    },
+    "timezone": 10800,
+    "id": 498817,
+    "name": "Saint Petersburg",
+    "cod": 200
+}

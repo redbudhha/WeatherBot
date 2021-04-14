@@ -1,10 +1,12 @@
 package com.example.weatherbot.app.utils;
 
-import com.example.weatherbot.app.dto.ForecastDto;
-import com.example.weatherbot.app.dto.WeatherDto;
-import com.example.weatherbot.app.model.Forecast;
+import com.example.weatherbot.app.dto.openweatherdto.current.OpenWeatherCurrentDto;
+import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherForecastDto;
+import com.example.weatherbot.app.dto.weatherapidto.current.WeatherAPICurrentDto;
+import com.example.weatherbot.app.model.OpenWeatherCurrentModel;
+import com.example.weatherbot.app.model.OpenWeatherForecastModel;
 import com.example.weatherbot.app.model.User;
-import com.example.weatherbot.app.model.Weather;
+import com.example.weatherbot.app.model.WeatherAPICurrentModel;
 import com.example.weatherbot.app.service.UserService;
 import com.example.weatherbot.app.service.WeatherService;
 import org.springframework.stereotype.Component;
@@ -130,12 +132,12 @@ public class TelegramFacade {
 
     public SendMessage createRequestToWeatherApi(String data, User user) {
         User.Location location = user.getLocation();
-        WeatherDto weatherDto = null;
+        OpenWeatherCurrentDto weatherDto = null;
         if (location == null) {
             weatherDto = weatherService.getCurrentWeatherFromOWByCity(user.getCity());
-            Weather weather = new Weather(weatherDto);
+            OpenWeatherCurrentModel openWeatherCurrentModel = new OpenWeatherCurrentModel(weatherDto);
             //weatherService.save(weather);
-            location = new User.Location(weatherDto.getLat(), weatherDto.getLon());
+            location = new User.Location(weatherDto.getCoordinate().getLat(), weatherDto.getCoordinate().getLon());
             user.setLocation(location);
         }
         SendMessage messageToUserWithWeatherForecast = new SendMessage();
@@ -144,11 +146,11 @@ public class TelegramFacade {
             if (Objects.isNull(weatherDto)) {
                 weatherDto = weatherService.getCurrentWeatherFromOWByLocation(user.getLocation().getLat(), user.getLocation().getLon());
             }
-            Weather weather = new Weather(weatherDto);
+            OpenWeatherCurrentModel weatherAPICurrentModel = new OpenWeatherCurrentModel(weatherDto);
             //weather.service(weather);
-            return messageToUserWithWeatherForecast.setText(weather.toString()).setChatId(user.getChatId());
+            return messageToUserWithWeatherForecast.setText(weatherAPICurrentModel.toString()).setChatId(user.getChatId());
         } else {
-            ForecastDto forecastDto = null;
+            OpenWeatherForecastDto forecastDto = null;
             if (data.equals("3")) {
                 forecastDto = weatherService.getForecastWeatherFromOWByLocation(location.getLat(), location.getLon(), 3);
                 System.out.println(forecastDto);
@@ -156,15 +158,16 @@ public class TelegramFacade {
                 forecastDto = weatherService.getForecastWeatherFromOWByLocation(location.getLat(), location.getLon(), 5);
             }
             if (Objects.nonNull(forecastDto)) {
-                Forecast forecast = new Forecast(forecastDto);
-                System.out.println(forecast);
-                return messageToUserWithWeatherForecast.setText(forecast.toString()).setChatId(user.getChatId());
+                OpenWeatherForecastModel openWeatherForecastModel = new OpenWeatherForecastModel(forecastDto);
+                System.out.println(openWeatherForecastModel);
+                return messageToUserWithWeatherForecast.setText(openWeatherForecastModel.toString()).setChatId(user.getChatId());
             }
 
-        }
+//        }String.format("Here is your weather: A temperature is {}, humidity is : {}", somemodet.getTemp(), someModel.getHumidity())
         System.out.println(weatherDto);
         return messageToUserWithWeatherForecast.setChatId(user.getChatId()).setText("Something goes wrong");
     }
 
+}
 }
 
