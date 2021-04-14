@@ -30,6 +30,7 @@ public class TelegramFacade {
     private final UserService userService;
     private final WeatherService weatherService;
     private boolean waitingForCity = false;
+    Map<Long, User> users = new HashMap<>();  // база не подключена, пока использую это
 
     public TelegramFacade(UserService userService, WeatherService service) {
         this.userService = userService;
@@ -70,6 +71,7 @@ public class TelegramFacade {
                 }
                 messageToUser = sendButtonsForChoosingDay(user.getChatId());
             }
+            messageToUser.setChatId(update.getMessage().getChatId());
         }
         if (update.hasCallbackQuery()) {
             return processCallBackQuery(update.getCallbackQuery());
@@ -77,6 +79,7 @@ public class TelegramFacade {
         // если ни одно условие не подошло
         if (messageToUser.getText() == null) {
             messageToUser.setText("This command isn't supported.");
+            messageToUser.setChatId(update.getMessage().getChatId());
         }
         return messageToUser.setChatId(update.getMessage().getChatId());
     }
@@ -138,6 +141,9 @@ public class TelegramFacade {
             default:
                 User user = userService.findUserByChatId(chatId);
                 return createRequestToWeatherApi(data, user);
+            } else {
+                throw new NullPointerException("User is not found!");
+            }
         }
     }
 

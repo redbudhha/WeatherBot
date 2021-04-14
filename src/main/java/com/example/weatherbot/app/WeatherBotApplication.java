@@ -8,6 +8,7 @@ import org.telegram.telegrambots.ApiContextInitializer;
 @EnableMongoRepositories
 @SpringBootApplication
 public class WeatherBotApplication {
+
     public static void main(String[] args) {
         ApiContextInitializer.init();
         SpringApplication.run(WeatherBotApplication.class, args);
