@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class WeatherAPICurrentModel {
+public class WeatherApiModel {
 
     private final String cityName;
     private final Double temp;
@@ -19,7 +19,8 @@ public class WeatherAPICurrentModel {
     private float lon;
 
 
-    public WeatherAPICurrentModel(WeatherAPICurrentDto dto) {
+
+    public WeatherApiModel(WeatherAPICurrentDto dto) {
         this.cityName = dto.getLocation().getCityName();
         this.temp = dto.getInfo().getTemp();
         this.pressure = dto.getInfo().getPressure();
@@ -31,18 +32,13 @@ public class WeatherAPICurrentModel {
         this.lon = dto.getLocation().getLon();
     }
 
-    @Override
-    public String toString() {
-        return "WeatherAPICurrentModel{" +
-                "cityName='" + cityName + '\'' +
-                ", temp=" + temp +
-                ", pressure=" + pressure +
-                ", humidity=" + humidity +
-                ", feelsLike=" + feelsLike +
-                ", condition='" + condition + '\'' +
-                ", dateTime=" + dateTime +
-                ", lat=" + lat +
-                ", lon=" + lon +
-                '}';
+    /*  Здесь нужен тот же подход, что и OpenWeatherModel
+    public WeatherApiModel(WeatherAPIForecastDto dto) {
+        this.cityName = dto.getLocation().getCityName();
+        this.dateTime = dto.getLocation().getLocalTime();
+        this.lat = dto.getLocation().getLat();
+        this.lon = dto.getLocation().getLon();
     }
+
+    */
 }

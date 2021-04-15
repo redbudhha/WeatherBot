@@ -16,27 +16,27 @@ public class User {
 
     public static class Location {
 
-        public Location(float lat, float lon) {
+        public Location(Double lat, Double lon) {
             this.lat = lat;
             this.lon = lon;
         }
 
-        private float lat;
-        private float lon;
+        private Double lat;
+        private Double lon;
 
-        public float getLat() {
+        public Double getLat() {
             return lat;
         }
 
-        public void setLat(float lat) {
+        public void setLat(Double lat) {
             this.lat = lat;
         }
 
-        public float getLon() {
+        public Double getLon() {
             return lon;
         }
 
-        public void setLon(float lon) {
+        public void setLon(Double lon) {
             this.lon = lon;
         }
 

@@ -1,9 +1,12 @@
 package com.example.weatherbot.app.dto.openweatherdto.current;
 
 import com.example.weatherbot.app.dto.openweatherdto.*;
+import com.example.weatherbot.app.utils.UnixTimeStamp;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -35,7 +38,8 @@ public class OpenWeatherCurrentDto {
     private Clouds clouds;
 
     @JsonProperty("dt")
-    private Long dateTime;
+    @JsonDeserialize(using = UnixTimeStamp.class)
+    private LocalDateTime dateTime;
 
     @JsonProperty("sys")
     private OpenWeatherSysCurrent currentSys;
@@ -82,7 +86,7 @@ public class OpenWeatherCurrentDto {
         return clouds;
     }
 
-    public Long getDateTime() {
+    public LocalDateTime getDateTime() {
         return dateTime;
     }
 

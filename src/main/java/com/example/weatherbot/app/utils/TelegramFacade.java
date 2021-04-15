@@ -1,12 +1,7 @@
 package com.example.weatherbot.app.utils;
 
-import com.example.weatherbot.app.dto.ForecastDto;
-import com.example.weatherbot.app.dto.WeatherDto;
-import com.example.weatherbot.app.model.Forecast;
 import com.example.weatherbot.app.model.User;
-import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.service.UserService;
-import com.example.weatherbot.app.service.WeatherService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,22 +14,18 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class TelegramFacade {
     public static final String RESOURCE = "https://api.telegram.org/bot";
     private final UserService userService;
-    private final WeatherService weatherService;
+    private final WeatherFacade weatherFacade;
     private boolean waitingForCity = false;
-    Map<Long, User> users = new HashMap<>();  // база не подключена, пока использую это
 
-    public TelegramFacade(UserService userService, WeatherService service) {
+    public TelegramFacade(UserService userService, WeatherFacade weatherFacade) {
         this.userService = userService;
-        this.weatherService = service;
+        this.weatherFacade = weatherFacade;
     }
 
     public BotApiMethod<?> handleUpdate(Update update) {
@@ -58,7 +49,7 @@ public class TelegramFacade {
                 if (Objects.nonNull(user)) {
                     if (update.getMessage().hasLocation()) {
                         Location location = update.getMessage().getLocation();
-                        user.setLocation(new User.Location(location.getLatitude(), location.getLongitude()));
+                        user.setLocation(new User.Location((double)location.getLatitude(),(double)location.getLongitude()));
 
                     }
                     if (waitingForCity) {
@@ -140,16 +131,14 @@ public class TelegramFacade {
                 return sendKeyBoardWithLocationInputChoice(chatId);
             default:
                 User user = userService.findUserByChatId(chatId);
-                return createRequestToWeatherApi(data, user);
-            } else {
-                throw new NullPointerException("User is not found!");
+                //return createRequestToWeatherApi(data, user);
             }
+            return null;
         }
-    }
 
-    public SendMessage createRequestToWeatherApi(String data, User user) {
+    public void createRequestToWeatherApi(String data, User user) {
         User.Location location = user.getLocation();
-        WeatherDto weatherDto = null;
+       /* WeatherDto weatherDto = null;
         if (location == null) {
             weatherDto = weatherService.getCurrentWeatherFromOWByCity(user.getCity());
             Weather weather = new Weather(weatherDto);
@@ -176,6 +165,9 @@ public class TelegramFacade {
 
         }
         return messageToUserWithWeatherForecast.setChatId(user.getChatId()).setText("Something goes wrong");
+    }
+
+*/
     }
 
     public SendMessage sendLocationQuestion() {
