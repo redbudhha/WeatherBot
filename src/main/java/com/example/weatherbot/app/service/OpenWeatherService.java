@@ -51,8 +51,8 @@ public class OpenWeatherService {
     /*
     forecast weather for the next day from by location service "Open Weather"
      */
-    public OpenWeatherForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon, int threeHoursCycles) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&lat=" + lat + "&lon=" + "&cnt=16"
+    public OpenWeatherForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon) {
+        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&lat=" + lat + "&lon=" + lon +"&cnt=16"
                 + "&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, OpenWeatherForecastDto.class);
 
