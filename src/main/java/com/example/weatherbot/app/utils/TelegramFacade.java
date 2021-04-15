@@ -1,6 +1,6 @@
 package com.example.weatherbot.app.utils;
 
-import com.example.weatherbot.app.model.User;
+import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.service.UserService;
 import org.springframework.stereotype.Component;
@@ -41,7 +41,7 @@ public class TelegramFacade {
                             user.setCity(update.getMessage().getText());
                             userService.update(user);
                             waitingForCity = false;
-                            messageToUser = sendButtonsForChoosingDay();
+                            messageToUser = sendButtonsForChoosingDay(user.getChatId());
                         }
                          else {
                             messageToUser = sendLocationQuestion();
@@ -55,7 +55,7 @@ public class TelegramFacade {
                 } else if (waitingForCity) {
                     userService.createUser(update);
                     waitingForCity = false;
-                    messageToUser = sendButtonsForChoosingDay();
+                    messageToUser = sendButtonsForChoosingDay(update.getMessage().getChatId());
                 }
             }
             if (!update.getMessage().hasText() && update.getMessage().hasLocation()) {
@@ -63,13 +63,13 @@ public class TelegramFacade {
                 if (Objects.nonNull(user)) {
                     if (update.getMessage().hasLocation()) {
                         Location location = update.getMessage().getLocation();
-                        user.setLocation(new User.Location((double)location.getLatitude(),(double)location.getLongitude()));
+                        user.setLocation(new User.Location(location.getLatitude(),location.getLongitude()));
                         userService.update(user);
                     }
                 } else {
                     userService.createUser(update);
                 }
-                messageToUser = sendButtonsForChoosingDay();
+                messageToUser = sendButtonsForChoosingDay(update.getMessage().getChatId());
             }
         }
         if (update.hasCallbackQuery()) {
@@ -100,7 +100,7 @@ public class TelegramFacade {
         return new SendMessage().setReplyMarkup(markup).setText("How would you like to send location data?").setChatId(chatId);
     }
 
-    public SendMessage sendButtonsForChoosingDay() {
+    public SendMessage sendButtonsForChoosingDay(long chatId) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         InlineKeyboardButton currentWeatherButton = new InlineKeyboardButton("Current weather forecast").setCallbackData("today");
         InlineKeyboardButton tomorrow = new InlineKeyboardButton("Tomorrow weather forecast").setCallbackData("tomorrow");
@@ -110,7 +110,7 @@ public class TelegramFacade {
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardRow);
         keyboardMarkup.setKeyboard(rowList);
-        return new SendMessage().setReplyMarkup(keyboardMarkup).setText("What day would you like to get the weather forecast?");
+        return new SendMessage().setReplyMarkup(keyboardMarkup).setText("What day would you like to get the weather forecast?").setChatId(chatId);
     }
 
     public SendMessage sendForRequestLocation(long chatId) {
@@ -134,16 +134,15 @@ public class TelegramFacade {
                 waitingForCity = true;
                 return messageToUser.setChatId(chatId).setText("Insert city");
             case "previous":
-                return sendButtonsForChoosingDay();
+                return sendButtonsForChoosingDay(chatId);
             case "new":
                 return sendKeyBoardWithLocationInputChoice(chatId);
             default:
                 User user = userService.findUserByChatId(chatId);
-                Weather requestToOpenWeather = weatherFacade.createRequestToOpenWeather(user, data);
+                Weather requestToOpenWeather = weatherFacade.createRequestToOpenWeather(user,data);
                 setLocationIfNotExist(requestToOpenWeather,user);
-                messageToUser.setText(requestToOpenWeather.toString());
+                return messageToUser.setText(requestToOpenWeather.toString()).setChatId(user.getChatId());
             }
-            return null;
         }
 
 

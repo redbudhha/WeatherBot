@@ -37,7 +37,7 @@ public class WeatherApiService {
     /*
   forecast weather by city name from service "Weather API"
   */
-    public WeatherAPIForecastDto getForecastWeatherFromWAByLocation(String cityName) {
+    public WeatherAPIForecastDto getForecastWeatherFromWAByCity(String cityName) {
         String url = "https://api.weatherapi.com/v1/forecast.json?key=" + apiTokenWeatherAPI
                 + "&q=" + cityName + "&days=2&aqi=no&alerts=no";
         return restTemplate.getForObject(url, WeatherAPIForecastDto.class);
@@ -46,7 +46,7 @@ public class WeatherApiService {
     /*
  forecast weather by location from service "Weather API"
   */
-    public WeatherAPIForecastDto getForecastWeatherFromWAByLocation(Float lat, float lon, int days) {
+    public WeatherAPIForecastDto getForecastWeatherFromWAByLocation(Float lat, float lon) {
         String url = "https://api.weatherapi.com/v1/forecast.json?key=" + apiTokenWeatherAPI
                 + "&q=" + lat + "," + lon + "&days=2&aqi=no&alerts=no";
         return restTemplate.getForObject(url, WeatherAPIForecastDto.class);

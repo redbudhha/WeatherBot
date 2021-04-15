@@ -1,4 +1,4 @@
-package com.example.weatherbot.app.model;
+package com.example.weatherbot.app.model.weather_model;
 
 import com.example.weatherbot.app.dto.openweatherdto.current.OpenWeatherCurrentDto;
 import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherForecastDto;
@@ -15,8 +15,8 @@ public class OpenWeatherModel {
     private final Integer humidity;
     private Double feelsLike;
     private String condition;
-    private Double lat;
-    private Double lon;
+    private Float lat;
+    private Float lon;
     private Double windSpeed;
     private Double windDeg;
     private LocalDateTime dateTime;
@@ -32,6 +32,7 @@ public class OpenWeatherModel {
         this.windSpeed = dto.getWind().getSpeed();
         this.windDeg = dto.getWind().getDeg();
         this.dateTime = dto.getDateTime();
+        this.condition = dto.getWeather().get(0).getCondition();
     }
 
     public OpenWeatherModel(OpenWeatherForecastDto forecastDto, OpenWeatherThreeHourForecast tomorrowForecast) {

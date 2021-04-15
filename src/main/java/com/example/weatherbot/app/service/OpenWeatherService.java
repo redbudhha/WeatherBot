@@ -32,7 +32,7 @@ public class OpenWeatherService {
     /*
     current weather by location name from service "Open Weather"
      */
-    public OpenWeatherCurrentDto getCurrentWeatherFromOWByLocation(Double lat, Double lon) {
+    public OpenWeatherCurrentDto getCurrentWeatherFromOWByLocation(Float lat, Float lon) {
         String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&lat=" + lat + "&lon=" + lon
                 + "&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
@@ -52,22 +52,19 @@ public class OpenWeatherService {
     forecast weather for the next day from by location service "Open Weather"
      */
     public OpenWeatherForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&lat=" + lat + "&lon=" + "&cnt=16"
+        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&lat=" + lat + "&lon=" + lon + "&cnt=16"
                 + "&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, OpenWeatherForecastDto.class);
 
     }
+
     public OpenWeatherThreeHourForecast searchForTimeStamp(OpenWeatherForecastDto dto) {
         Optional<OpenWeatherThreeHourForecast> forecast = dto.getHourlyArray().stream()
-                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15, 0))
+                        .toString()))
                 .findAny();
         return forecast.orElse(null);
     }
 
-    public OpenWeatherThreeHourForecast searchForTimeStamp(OpenWeatherForecastDto dto) {
-        Optional<OpenWeatherThreeHourForecast> forecast = dto.getHourlyArray().stream()
-                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
-                .findAny();
-        return forecast.orElse(null);
-    }
+
 }

@@ -6,17 +6,17 @@ import lombok.Data;
 @Data
 public class CityCoord {
     @JsonProperty("lat")
-    private Double lat;
+    private Float lat;
 
     @JsonProperty("lon")
-    private Double lon;
+    private Float lon;
 
 
-    public Double getLat() {
+    public Float getLat() {
         return lat;
     }
 
-    public Double getLon() {
+    public Float getLon() {
         return lon;
     }
 }

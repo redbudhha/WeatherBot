@@ -1,6 +1,6 @@
 package com.example.weatherbot.app.service;
 
-import com.example.weatherbot.app.model.User;
+import com.example.weatherbot.app.model.db_model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class UserService {
         String userName = update.getMessage().getFrom().getUserName();
         if (update.getMessage().hasLocation()) {
             Location location = update.getMessage().getLocation();
-            User.Location loc = new User.Location((double)location.getLatitude(), (double)location.getLongitude());
+            User.Location loc = new User.Location(location.getLatitude(),location.getLongitude());
             user = new User(userName, loc, chatId);
         } else {
             String city = update.getMessage().getText().toLowerCase();

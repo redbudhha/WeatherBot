@@ -1,4 +1,4 @@
-package com.example.weatherbot.app.model;
+package com.example.weatherbot.app.model.weather_model;
 
 import com.example.weatherbot.app.dto.weatherbitdto.WeatherBitInfo;
 import com.example.weatherbot.app.dto.weatherbitdto.forecast.WeatherBitForecastDto;

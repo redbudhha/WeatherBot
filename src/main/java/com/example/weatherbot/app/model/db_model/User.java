@@ -1,4 +1,4 @@
-package com.example.weatherbot.app.model;
+package com.example.weatherbot.app.model.db_model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,27 +17,27 @@ public class User {
 
     public static class Location {
 
-        public Location(Double lat, Double lon) {
+        public Location(Float lat, Float lon) {
             this.lat = lat;
             this.lon = lon;
         }
 
-        private Double lat;
-        private Double lon;
+        private Float lat;
+        private Float lon;
 
-        public Double getLat() {
+        public Float getLat() {
             return lat;
         }
 
-        public void setLat(Double lat) {
+        public void setLat(Float lat) {
             this.lat = lat;
         }
 
-        public Double getLon() {
+        public Float getLon() {
             return lon;
         }
 
-        public void setLon(Double lon) {
+        public void setLon(Float lon) {
             this.lon = lon;
         }
 

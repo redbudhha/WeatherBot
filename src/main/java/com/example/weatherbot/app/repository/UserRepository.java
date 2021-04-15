@@ -1,7 +1,7 @@
 package com.example.weatherbot.app.repository;
 
 
-import com.example.weatherbot.app.model.User;
+import com.example.weatherbot.app.model.db_model.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

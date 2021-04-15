@@ -1,5 +1,8 @@
-package com.example.weatherbot.app.model;
+package com.example.weatherbot.app.model.db_model;
 
+import com.example.weatherbot.app.model.weather_model.OpenWeatherModel;
+import com.example.weatherbot.app.model.weather_model.WeatherApiModel;
+import com.example.weatherbot.app.model.weather_model.WeatherBitModel;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
