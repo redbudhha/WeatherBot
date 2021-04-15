@@ -1,10 +1,18 @@
 package com.example.weatherbot.app.service;
 
+import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherForecastDto;
+import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherThreeHourForecast;
 import com.example.weatherbot.app.dto.weatherapidto.current.WeatherAPICurrentDto;
+import com.example.weatherbot.app.dto.weatherapidto.forecast.ForecastDay;
 import com.example.weatherbot.app.dto.weatherapidto.forecast.WeatherAPIForecastDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
 
 @Service
 public class WeatherApiService {
@@ -52,5 +60,11 @@ public class WeatherApiService {
         return restTemplate.getForObject(url, WeatherAPIForecastDto.class);
 
     }
-
+    public ForecastDay searchForTimeStampWA(WeatherAPIForecastDto dto) {
+        Optional<ForecastDay> forecast = dto.getForecasts().stream()
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
+                .findAny();
+        return forecast.orElse(null);
+    }
+    //возможно, в plusDays нужно передавать 2, т.к. под 1 может храниться прогноз на сегодня
 }

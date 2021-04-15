@@ -60,11 +60,8 @@ public class OpenWeatherService {
 
     public OpenWeatherThreeHourForecast searchForTimeStamp(OpenWeatherForecastDto dto) {
         Optional<OpenWeatherThreeHourForecast> forecast = dto.getHourlyArray().stream()
-                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15, 0))
-                        .toString()))
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
                 .findAny();
         return forecast.orElse(null);
     }
-
-
 }

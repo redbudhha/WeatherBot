@@ -16,4 +16,11 @@ public class WeatherAPIForecastDto {
     @JsonProperty("forecast")
     private List <ForecastDay> forecasts;
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public List<ForecastDay> getForecasts() {
+        return forecasts;
+    }
 }

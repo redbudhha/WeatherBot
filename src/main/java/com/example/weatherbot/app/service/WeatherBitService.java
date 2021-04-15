@@ -64,10 +64,11 @@ public class WeatherBitService {
         return restTemplate.getForObject(url, WeatherBitForecastDto.class);
     }
 
-//    public OpenWeatherThreeHourForecast searchForTimeStamp(OpenWeatherForecastDto dto) {
-//        Optional<OpenWeatherThreeHourForecast> forecast = dto.getHourlyArray().stream()
-//                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
-//                .findAny();
-//        return forecast.orElse(null);
-//    }
+    public WeatherBitInfo searchForTimeStampWB(WeatherBitForecastDto dto) {
+        Optional<WeatherBitInfo> forecast = dto.getMainInfo().stream()
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
+                .findAny();
+        return forecast.orElse(null);
+    }
+    //возможно, в plusDays нужно передавать 2, т.к. под 1 может храниться прогноз на сегодня
 }
