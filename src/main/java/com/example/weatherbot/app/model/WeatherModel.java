@@ -1,6 +1,7 @@
 package com.example.weatherbot.app.model;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Data
 public class WeatherModel {    //класс для бд, объединяющий
     //какое-то поле будет id (есть ли в монго автогенерация?)
+    @Id
     private LocalDate date;
     @Field
     private OpenWeatherModel openWeatherModel;

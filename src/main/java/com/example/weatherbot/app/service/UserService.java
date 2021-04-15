@@ -1,20 +1,20 @@
 package com.example.weatherbot.app.service;
 
 import com.example.weatherbot.app.model.User;
-import com.example.weatherbot.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
+
     @Autowired
-    private UserRepository repository;
+    private MongoTemplate mongoTemplate;
 
 
     public User createUser(Update update) {
@@ -29,16 +29,18 @@ public class UserService {
             String city = update.getMessage().getText().toLowerCase();
             user = new User(userName, city, chatId);
         }
-        return repository.save(user);
+        return mongoTemplate.save(user, "user");
     }
 
 
     public List<User> findAll() {
-        return repository.findAll();
+        return mongoTemplate.findAll(User.class,"user");
     }
     public User findUserByChatId(Long chatId) {
-        Optional<User> byId = repository.findById(chatId);
-        return byId.orElse(null);
+       return mongoTemplate.findById(chatId,User.class);
+    }
+    public void update(User user) {
+     mongoTemplate.save(user,"user");
     }
 
 
