@@ -25,15 +25,15 @@ public class WeatherApiModel {
     public WeatherApiModel(WeatherAPICurrentDto dto) {
         this.cityName = dto.getLocation().getCityName();
         this.temp = dto.getInfo().getTemp();
-        this.pressure = dto.getInfo().getPressure();
-        this.humidity = dto.getInfo().getHumidity();
-        this.feelsLike = dto.getInfo().getFeelsLike();
+        this.pressure = dto.getPressure();
+        this.humidity = dto.getHumidity();
+        this.feelsLike = dto.getFeelsLike();
         this.condition = dto.getInfo().getCondition().getDescription();
         this.dateTime = dto.getLocation().getLocalTime();
         this.lat = dto.getLocation().getLat();
         this.lon = dto.getLocation().getLon();
-        this.windSpeed = dto.getInfo().getWindSpeed();
-        this.windDeg = dto.getInfo().getWindDeg();
+        this.windSpeed = dto.getWindSpeed();
+        this.windDeg = dto.getWindDeg();
         this.dateTime = dto.getLocation().getLocalTime();
     }
 

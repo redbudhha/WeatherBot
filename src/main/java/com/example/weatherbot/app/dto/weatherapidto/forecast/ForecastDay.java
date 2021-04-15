@@ -16,6 +16,15 @@ public class ForecastDay {
    @JsonProperty("hour")
     HourForecast hourForecast;
 
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
 
+    public DayWeatherInfo getWeatherInfo() {
+        return weatherInfo;
+    }
 
+    public HourForecast getHourForecast() {
+        return hourForecast;
+    }
 }
