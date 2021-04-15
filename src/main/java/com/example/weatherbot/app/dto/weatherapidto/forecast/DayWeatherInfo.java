@@ -16,9 +16,13 @@ public class DayWeatherInfo {
     private Double avgTemp;
 
     @JsonProperty("avghumidity")
-    private Double avgHumidity;
+    private Integer avgHumidity;
 
     @JsonProperty("condition")
     private Condition condition;
+
+    @JsonProperty("maxwind_kph")
+    private Double windSpeed;
+
 
 }

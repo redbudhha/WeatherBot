@@ -19,7 +19,7 @@ public class CurrentWeatherInfo {
     private Double windDeg;
 
     @JsonProperty("pressure_mb")
-    private Double pressure;
+    private Integer pressure;
 
     @JsonProperty("humidity")
     private Integer humidity;

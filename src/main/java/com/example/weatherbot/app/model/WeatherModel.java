@@ -16,12 +16,14 @@ public class WeatherModel {    //класс для бд, объединяющи�
     @Field
     private WeatherApiModel weatherApiModel;
     @Field
-    private WeatherGroundModel weatherGroundModel;
+    private WeatherBitModel weatherBitModel;
 
-    public WeatherModel(LocalDate date, OpenWeatherModel openWeatherModel, WeatherApiModel weatherApiModel, WeatherGroundModel weatherGroundModel) {
+    public WeatherModel(LocalDate date, OpenWeatherModel openWeatherModel, WeatherApiModel weatherApiModel, WeatherBitModel weatherBitModel) {
         this.date = date;
         this.openWeatherModel = openWeatherModel;
         this.weatherApiModel = weatherApiModel;
-        this.weatherGroundModel = weatherGroundModel;
+        this.weatherBitModel = weatherBitModel;
     }
+
+
 }

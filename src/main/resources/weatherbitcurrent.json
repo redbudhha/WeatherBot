@@ -1,0 +1,47 @@
+{
+  "data": [
+    {
+      "rh": 39,
+      "pod": "d",
+      "lon": 30.31413,
+      "pres": 1028.5,
+      "timezone": "Europe/Moscow",
+      "ob_time": "2021-04-15 08:30",
+      "country_code": "RU",
+      "clouds": 20,
+      "ts": 1618475400,
+      "solar_rad": 565.3,
+      "state_code": "66",
+      "city_name": "Saint Petersburg",
+      "wind_spd": 5,
+      "wind_cdir_full": "east-northeast",
+      "wind_cdir": "ENE",
+      "slp": 1029,
+      "vis": 5,
+      "h_angle": -22.5,
+      "sunset": "17:17",
+      "dni": 816.61,
+      "dewpt": -6,
+      "snow": 0,
+      "uv": 6.07491,
+      "precip": 0,
+      "wind_dir": 60,
+      "sunrise": "02:39",
+      "ghi": 567.23,
+      "dhi": 100.31,
+      "aqi": 29,
+      "lat": 59.93863,
+      "weather": {
+        "icon": "c02d",
+        "code": 801,
+        "description": "Few clouds"
+      },
+      "datetime": "2021-04-15:08",
+      "temp": 7,
+      "station": "ULLI",
+      "elev_angle": 35.43,
+      "app_temp": 3.9
+    }
+  ],
+  "count": 1
+}
