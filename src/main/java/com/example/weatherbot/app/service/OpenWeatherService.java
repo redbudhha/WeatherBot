@@ -16,8 +16,6 @@ import java.util.Optional;
 public class OpenWeatherService {
     private final RestTemplate restTemplate;
     private final String apiTokenOpenWeather = "36daa3f6889a39abb62113bafa51611b";
-    //это мой токен
-    private final String token = "267f70c609cff8699fdc74f50434b9c4";
 
 
     @Autowired
@@ -26,10 +24,11 @@ public class OpenWeatherService {
     }
 
     public OpenWeatherCurrentDto getCurrentByCity(String cityName) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "+&appid=" + token;
+        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "+&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
 
     }
+
     /*
     current weather by location name from service "Open Weather"
      */
@@ -44,7 +43,7 @@ public class OpenWeatherService {
      */
     public OpenWeatherForecastDto getForecastWeatherFromOWByCity(String cityName) {
         String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&units=metric&cnt=16"
-                 + "&appid=" + apiTokenOpenWeather;
+                + "&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, OpenWeatherForecastDto.class);
 
     }
@@ -65,4 +64,10 @@ public class OpenWeatherService {
         return forecast.orElse(null);
     }
 
+    public OpenWeatherThreeHourForecast searchForTimeStamp(OpenWeatherForecastDto dto) {
+        Optional<OpenWeatherThreeHourForecast> forecast = dto.getHourlyArray().stream()
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
+                .findAny();
+        return forecast.orElse(null);
+    }
 }

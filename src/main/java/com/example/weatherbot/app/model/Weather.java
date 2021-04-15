@@ -2,13 +2,9 @@ package com.example.weatherbot.app.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
 public class Weather {
     private final Double temp;
     private final Double pressure;
@@ -16,19 +12,27 @@ public class Weather {
     private final Double speed;
     private Double feelsLike;
     private String condition;
-    private LocalDateTime localDateTime;
-    private Double lat;
-    private Double lon;
+    private Float lat;
+    private Float lon;
 
-    public Weather(Double temp, Double pressure, Integer humidity, Double feelsLike, String condition, Double speed, LocalDateTime localDateTime,Double lat,Double lon) {
+    public Weather(Double temp, Double pressure, Integer humidity, Double feelsLike, String condition,Double speed) {
         this.temp = temp;
         this.pressure = pressure;
         this.humidity = humidity;
+        this.speed = speed;
         this.feelsLike = feelsLike;
         this.condition = condition;
-        this.speed = speed;
-        this.localDateTime = localDateTime;
         this.lat = lat;
         this.lon = lon;
+    }
+
+    @Override
+    public String toString() {
+        return " Temp = " + this.temp + "°C" +
+                "\nPressure = " + this.pressure + "mm. of mercury" +
+                "\nHumidity = " + this.humidity + "%" +
+                "\nSpeed = " + this.speed + "m\\s" +
+                "\nFeels like = " + this.feelsLike + "°C" +
+                "\nCondition = " + this.condition;
     }
 }

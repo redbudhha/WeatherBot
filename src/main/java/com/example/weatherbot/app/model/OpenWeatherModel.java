@@ -17,8 +17,8 @@ public class OpenWeatherModel {
     private String condition;
     private Double lat;
     private Double lon;
-    private Double speed;
-    private Integer deg;
+    private Double windSpeed;
+    private Double windDeg;
     private LocalDateTime dateTime;
 
     public OpenWeatherModel(OpenWeatherCurrentDto dto) {
@@ -29,8 +29,8 @@ public class OpenWeatherModel {
         this.feelsLike = dto.getMain().getFeelsLike();
         this.lat = dto.getCoordinate().getLat();
         this.lon = dto.getCoordinate().getLon();
-        this.speed = dto.getWind().getSpeed();
-        this.deg = dto.getWind().getDeg();
+        this.windSpeed = dto.getWind().getSpeed();
+        this.windDeg = dto.getWind().getDeg();
         this.dateTime = dto.getDateTime();
     }
 
@@ -42,12 +42,9 @@ public class OpenWeatherModel {
         this.feelsLike = tomorrowForecast.getMainMetrics().getFeelsLike();
         this.lat = forecastDto.getCity().getCoords().getLat();
         this.lon = forecastDto.getCity().getCoords().getLon();
-        this.speed = tomorrowForecast.getWind().getSpeed();
-        this.deg = tomorrowForecast.getWind().getDeg();
+        this.windSpeed = tomorrowForecast.getWind().getSpeed();
+        this.windDeg = tomorrowForecast.getWind().getDeg();
         this.dateTime = tomorrowForecast.getDateTime();
     }
-
-
-
 
 }

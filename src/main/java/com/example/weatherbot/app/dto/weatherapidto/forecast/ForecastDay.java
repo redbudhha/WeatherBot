@@ -13,5 +13,9 @@ public class ForecastDay {
    @JsonProperty("day")
     DayWeatherInfo weatherInfo;
 
+   @JsonProperty("hour")
+    HourForecast hourForecast;
+
+
 
 }
