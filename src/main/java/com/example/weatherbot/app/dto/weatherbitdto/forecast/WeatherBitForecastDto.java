@@ -1,6 +1,6 @@
 package com.example.weatherbot.app.dto.weatherbitdto.forecast;
 
-import com.example.weatherbot.app.dto.weatherbitdto.WeatherBitInfo;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class WeatherBitForecastDto {
     @JsonProperty("data")
-    private List<WeatherBitInfo> mainInfo;
+    private List<WeatherBitInfoForecast> mainInfoForecast;
 
     @JsonProperty("city_name")
     private String cityName;

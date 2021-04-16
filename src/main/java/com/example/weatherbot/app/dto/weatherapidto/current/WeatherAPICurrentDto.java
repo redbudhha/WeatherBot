@@ -14,18 +14,5 @@ public class WeatherAPICurrentDto {
     @JsonProperty("current")
     private CurrentWeatherInfo info;
 
-    @JsonProperty("wind_kph")
-    private Double windSpeed;
 
-    @JsonProperty("wind_degree")
-    private Double windDeg;
-
-    @JsonProperty("pressure_mb")
-    private Integer pressure;
-
-    @JsonProperty("humidity")
-    private Integer humidity;
-
-    @JsonProperty("feelslike_c")
-    private Double feelsLike;
 }

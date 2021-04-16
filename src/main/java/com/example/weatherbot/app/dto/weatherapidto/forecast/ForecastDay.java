@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class ForecastDay {
@@ -16,18 +17,8 @@ public class ForecastDay {
     @JsonProperty("day")
     DayWeatherInfo weatherInfo;
 
+
     @JsonProperty("hour")
-    HourForecast hourForecast;
+    private List<HourForecast> hourForecast;
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-
-    public DayWeatherInfo getWeatherInfo() {
-        return weatherInfo;
-    }
-
-    public HourForecast getHourForecast() {
-        return hourForecast;
-    }
 }

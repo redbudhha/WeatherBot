@@ -29,96 +29,43 @@ public class WeatherApiService {
     /*
     current weather by city name from service "Weather API"
      */
-    public WeatherApiModel getCurrentWeatherFromWAByCity(String cityName) {
+    public WeatherAPICurrentDto getCurrentWeatherFromWAByCity(String cityName) {
         String url = "https://api.weatherapi.com/v1/current.json?key="
                 + apiTokenWeatherAPI + "&q=" + cityName + "&aqi=no";
-        WeatherAPICurrentDto dto = restTemplate.getForObject(url, WeatherAPICurrentDto.class);
-        if (Objects.nonNull(dto)) {
-            return new WeatherApiModel(dto.getLocation().getCityName(),
-                    dto.getInfo().getTemp(), dto.getPressure(),
-                    dto.getHumidity(), dto.getFeelsLike(),
-                    dto.getInfo().getCondition().getDescription(),
-                    dto.getLocation().getLat(), dto.getLocation().getLon(),
-                    dto.getWindSpeed(),
-                    dto.getWindDeg(),
-                    dto.getLocation().getLocalTime());
-        } else {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
-        }
+        return restTemplate.getForObject(url, WeatherAPICurrentDto.class);
     }
 
     /*
   current weather by location name from service "Weather API"
    */
-    public WeatherApiModel getCurrentWeatherFromWAByLocation(Float lat, float lon) {
+    public WeatherAPICurrentDto getCurrentWeatherFromWAByLocation(Float lat, float lon) {
         String url = "https://api.weatherapi.com/v1/current.json?key="
                 + apiTokenWeatherAPI + "&q=" + lat + "," + lon + "&aqi=no";
-        WeatherAPICurrentDto dto = restTemplate.getForObject(url, WeatherAPICurrentDto.class);
-        if (Objects.nonNull(dto)) {
-            return new WeatherApiModel(dto.getLocation().getCityName(),
-                    dto.getInfo().getTemp(), dto.getPressure(),
-                    dto.getHumidity(), dto.getFeelsLike(),
-                    dto.getInfo().getCondition().getDescription(),
-                    dto.getLocation().getLat(), dto.getLocation().getLon(),
-                    dto.getWindSpeed(),
-                    dto.getWindDeg(),
-                    dto.getLocation().getLocalTime());
-        } else {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
-        }
+        return restTemplate.getForObject(url, WeatherAPICurrentDto.class);
     }
 
     /*
   forecast weather by city name from service "Weather API"
   */
-    public WeatherApiModel getForecastWeatherFromWAByCity(String cityName) {
+    public WeatherAPIForecastDto getForecastWeatherFromWAByCity(String cityName) {
         String url = "https://api.weatherapi.com/v1/forecast.json?key=" + apiTokenWeatherAPI
                 + "&q=" + cityName + "&days=2&aqi=no&alerts=no";
-        WeatherAPIForecastDto dto = restTemplate.getForObject(url, WeatherAPIForecastDto.class);
-        if (Objects.nonNull(dto)) {
-            ForecastDay forecastDay = searchForTimeStampWA(dto);
-            return new WeatherApiModel(dto.getLocation().getCityName(),
-                    forecastDay.getWeatherInfo().getAvgTemp(), forecastDay.getHourForecast().getPressure(),
-                    forecastDay.getWeatherInfo().getAvgHumidity(),
-                    forecastDay.getHourForecast().getFeelsLike(),
-                    forecastDay.getWeatherInfo().getCondition().getDescription(),
-                    dto.getLocation().getLat(),
-                    dto.getLocation().getLon(), forecastDay.getWeatherInfo().getWindSpeed(),
-                    forecastDay.getHourForecast().getWindDeg(),
-                    dto.getLocation().getLocalTime()
-            );
-        } else {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
-        }
+        return restTemplate.getForObject(url, WeatherAPIForecastDto.class);
     }
 
     /*
  forecast weather by location from service "Weather API"
   */
-    public WeatherApiModel getForecastWeatherFromWAByLocation(Float lat, float lon) {
+    public WeatherAPIForecastDto getForecastWeatherFromWAByLocation(Float lat, float lon) {
         String url = "https://api.weatherapi.com/v1/forecast.json?key=" + apiTokenWeatherAPI
                 + "&q=" + lat + "," + lon + "&days=2&aqi=no&alerts=no";
-        WeatherAPIForecastDto dto = restTemplate.getForObject(url, WeatherAPIForecastDto.class);
-        if (Objects.nonNull(dto)) {
-            ForecastDay forecastDay = searchForTimeStampWA(dto);
-            return new WeatherApiModel(dto.getLocation().getCityName(),
-                    forecastDay.getWeatherInfo().getAvgTemp(), forecastDay.getHourForecast().getPressure(),
-                    forecastDay.getWeatherInfo().getAvgHumidity(),
-                    forecastDay.getHourForecast().getFeelsLike(),
-                    forecastDay.getWeatherInfo().getCondition().getDescription(),
-                    dto.getLocation().getLat(),
-                    dto.getLocation().getLon(), forecastDay.getWeatherInfo().getWindSpeed(),
-                    forecastDay.getHourForecast().getWindDeg(),
-                    dto.getLocation().getLocalTime());
-        } else {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
-        }
+        return restTemplate.getForObject(url, WeatherAPIForecastDto.class);
 
     }
-    public ForecastDay searchForTimeStampWA(WeatherAPIForecastDto dto) {
-        Optional<ForecastDay> forecast = dto.getForecasts().stream()
-                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
-                .findAny();
-        return forecast.orElse(null);
-    }
+//    public ForecastDay searchForTimeStampWA(WeatherAPIForecastDto dto) {
+//        Optional<ForecastDay> forecast = dto.getForecasts().stream()
+//                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
+//                .findAny();
+//        return forecast.orElse(null);
+//    }
 }

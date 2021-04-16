@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Weather {
+    private final String cityName;
     private final Double temp;
     private final Integer pressure;
     private final Integer humidity;
@@ -15,7 +16,8 @@ public class Weather {
     private Float lat;
     private Float lon;
 
-    public Weather(Double temp, Integer pressure, Integer humidity,Double speed, Double feelsLike, String condition,Float lat,Float lon) {
+    public Weather(String cityName, Double temp, Integer pressure, Integer humidity, Double speed, Double feelsLike, String condition, Float lat, Float lon) {
+        this.cityName = cityName;
         this.temp = temp;
         this.pressure = pressure;
         this.humidity = humidity;
@@ -28,8 +30,10 @@ public class Weather {
 
     @Override
     public String toString() {
-        return " Temp = " + this.temp + "°C" +
-                "\nPressure = " + this.pressure + "mm. of mercury" +
+        return " City name: " + this.cityName +
+                "\n" +
+                "\nTemperature = " + this.temp + "°C" +
+                "\nPressure = " + this.pressure + " mm. of mercury" +
                 "\nHumidity = " + this.humidity + "%" +
                 "\nWind speed = " + this.speed + " m\\s" +
                 "\nFeels like = " + this.feelsLike + "°C" +
