@@ -34,7 +34,14 @@ public class WeatherApiService {
                 + apiTokenWeatherAPI + "&q=" + cityName + "&aqi=no";
         WeatherAPICurrentDto dto = restTemplate.getForObject(url, WeatherAPICurrentDto.class);
         if (Objects.nonNull(dto)) {
-            return new WeatherApiModel(dto);
+            return new WeatherApiModel(dto.getLocation().getCityName(),
+                    dto.getInfo().getTemp(), dto.getPressure(),
+                    dto.getHumidity(), dto.getFeelsLike(),
+                    dto.getInfo().getCondition().getDescription(),
+                    dto.getLocation().getLat(), dto.getLocation().getLon(),
+                    dto.getWindSpeed(),
+                    dto.getWindDeg(),
+                    dto.getLocation().getLocalTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
         }
@@ -48,7 +55,14 @@ public class WeatherApiService {
                 + apiTokenWeatherAPI + "&q=" + lat + "," + lon + "&aqi=no";
         WeatherAPICurrentDto dto = restTemplate.getForObject(url, WeatherAPICurrentDto.class);
         if (Objects.nonNull(dto)) {
-            return new WeatherApiModel(dto);
+            return new WeatherApiModel(dto.getLocation().getCityName(),
+                    dto.getInfo().getTemp(), dto.getPressure(),
+                    dto.getHumidity(), dto.getFeelsLike(),
+                    dto.getInfo().getCondition().getDescription(),
+                    dto.getLocation().getLat(), dto.getLocation().getLon(),
+                    dto.getWindSpeed(),
+                    dto.getWindDeg(),
+                    dto.getLocation().getLocalTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
         }
@@ -62,8 +76,17 @@ public class WeatherApiService {
                 + "&q=" + cityName + "&days=2&aqi=no&alerts=no";
         WeatherAPIForecastDto dto = restTemplate.getForObject(url, WeatherAPIForecastDto.class);
         if (Objects.nonNull(dto)) {
-            ForecastDay forecast = searchForTimeStampWA(dto);
-            return new WeatherApiModel(dto,forecast);
+            ForecastDay forecastDay = searchForTimeStampWA(dto);
+            return new WeatherApiModel(dto.getLocation().getCityName(),
+                    forecastDay.getWeatherInfo().getAvgTemp(), forecastDay.getHourForecast().getPressure(),
+                    forecastDay.getWeatherInfo().getAvgHumidity(),
+                    forecastDay.getHourForecast().getFeelsLike(),
+                    forecastDay.getWeatherInfo().getCondition().getDescription(),
+                    dto.getLocation().getLat(),
+                    dto.getLocation().getLon(), forecastDay.getWeatherInfo().getWindSpeed(),
+                    forecastDay.getHourForecast().getWindDeg(),
+                    dto.getLocation().getLocalTime()
+            );
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
         }
@@ -77,8 +100,16 @@ public class WeatherApiService {
                 + "&q=" + lat + "," + lon + "&days=2&aqi=no&alerts=no";
         WeatherAPIForecastDto dto = restTemplate.getForObject(url, WeatherAPIForecastDto.class);
         if (Objects.nonNull(dto)) {
-            ForecastDay forecast = searchForTimeStampWA(dto);
-            return new WeatherApiModel(dto,forecast);
+            ForecastDay forecastDay = searchForTimeStampWA(dto);
+            return new WeatherApiModel(dto.getLocation().getCityName(),
+                    forecastDay.getWeatherInfo().getAvgTemp(), forecastDay.getHourForecast().getPressure(),
+                    forecastDay.getWeatherInfo().getAvgHumidity(),
+                    forecastDay.getHourForecast().getFeelsLike(),
+                    forecastDay.getWeatherInfo().getCondition().getDescription(),
+                    dto.getLocation().getLat(),
+                    dto.getLocation().getLon(), forecastDay.getWeatherInfo().getWindSpeed(),
+                    forecastDay.getHourForecast().getWindDeg(),
+                    dto.getLocation().getLocalTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
         }

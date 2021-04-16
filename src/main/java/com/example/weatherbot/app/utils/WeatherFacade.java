@@ -84,7 +84,6 @@ public class WeatherFacade {
         WeatherApiModel weatherApiModel = weatherApiService.getCurrentWeatherFromWAByCity(city);
         WeatherBitModel weatherBitModel = weatherBitService.getCurrentWeatherFromWBByCity(city);
         weatherService.save(weatherBitModel, openWeatherModel, weatherApiModel);
-        weatherService.save(null, openWeatherModel, null);
         //return new Weather(openWeatherModel.getTemp(), openWeatherModel.getPressure(), openWeatherModel.getHumidity(), openWeatherModel.getWindSpeed(),
                // openWeatherModel.getFeelsLike(), openWeatherModel.getCondition(), openWeatherModel.getLat(), openWeatherModel.getLon());
         weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);

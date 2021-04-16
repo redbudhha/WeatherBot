@@ -1,12 +1,11 @@
 package com.example.weatherbot.app.model.weather_model;
 
-import com.example.weatherbot.app.dto.weatherapidto.current.WeatherAPICurrentDto;
-import com.example.weatherbot.app.dto.weatherapidto.forecast.ForecastDay;
-import com.example.weatherbot.app.dto.weatherapidto.forecast.WeatherAPIForecastDto;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-
+@AllArgsConstructor
 @Data
 public class WeatherApiModel {
     private final String cityName;
@@ -20,39 +19,5 @@ public class WeatherApiModel {
     private final Double windSpeed;
     private final Double windDeg;
     private LocalDateTime dateTime;
-
-
-    public WeatherApiModel(WeatherAPICurrentDto dto) {
-        this.cityName = dto.getLocation().getCityName();
-        this.temp = dto.getInfo().getTemp();
-        this.pressure = dto.getPressure();
-        this.humidity = dto.getHumidity();
-        this.feelsLike = dto.getFeelsLike();
-        this.condition = dto.getInfo().getCondition().getDescription();
-        this.dateTime = dto.getLocation().getLocalTime();
-        this.lat = dto.getLocation().getLat();
-        this.lon = dto.getLocation().getLon();
-        this.windSpeed = dto.getWindSpeed();
-        this.windDeg = dto.getWindDeg();
-        this.dateTime = dto.getLocation().getLocalTime();
-    }
-
-
-    public WeatherApiModel(WeatherAPIForecastDto dto, ForecastDay forecastDay) {
-        this.cityName = dto.getLocation().getCityName();
-        this.temp = forecastDay.getWeatherInfo().getAvgTemp();
-        this.pressure = forecastDay.getHourForecast().getPressure();
-        this.humidity = forecastDay.getWeatherInfo().getAvgHumidity();
-        this.feelsLike = forecastDay.getHourForecast().getFeelsLike();
-        this.condition = forecastDay.getWeatherInfo().getCondition().getDescription();
-        this.dateTime = dto.getLocation().getLocalTime();
-        this.lat = dto.getLocation().getLat();
-        this.lon = dto.getLocation().getLon();
-        this.windSpeed = forecastDay.getWeatherInfo().getWindSpeed();
-        this.windDeg = forecastDay.getHourForecast().getWindDeg();
-
-
-    }
-
 
 }

@@ -30,13 +30,10 @@ public class WeatherBitInfo {
     @JsonProperty("weather")
     private WeatherDescription desc;
 
-    @JsonProperty("moonrise_ts")
-    @JsonDeserialize(using = UnixTimeStamp.class)
-    private LocalDateTime dateTimeForForecast;
 
     @JsonProperty("ts")
     @JsonDeserialize(using = UnixTimeStamp.class)
-    private LocalDateTime dateTimeForCurrent;
+    private LocalDateTime dateTime;
 
 
     @JsonProperty("temp")

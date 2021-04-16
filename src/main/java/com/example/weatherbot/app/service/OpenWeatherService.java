@@ -31,7 +31,12 @@ public class OpenWeatherService {
         String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&q=" + cityName + "+&appid=" + apiTokenOpenWeather;
         OpenWeatherCurrentDto dto = restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
         if (Objects.nonNull(dto)) {
-            return new OpenWeatherModel(dto);
+            return new OpenWeatherModel(dto.getName(),
+                    dto.getMain().getTemp(), dto.getMain().getPressure(),
+                    dto.getMain().getHumidity(), dto.getMain().getFeelsLike(),
+                    dto.getWeather().get(0).getCondition(), dto.getCoordinate().getLat(),
+                    dto.getCoordinate().getLon(), dto.getWind().getSpeed(),
+                    dto.getWind().getDeg(), dto.getDateTime());
         } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "OpenWeatherDto is null");
     }
 
@@ -43,7 +48,12 @@ public class OpenWeatherService {
                 + "&appid=" + apiTokenOpenWeather;
         OpenWeatherCurrentDto dto = restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
         if (Objects.nonNull(dto)) {
-            return new OpenWeatherModel(dto);
+            return new OpenWeatherModel(dto.getName(),
+                    dto.getMain().getTemp(), dto.getMain().getPressure(),
+                    dto.getMain().getHumidity(), dto.getMain().getFeelsLike(),
+                    dto.getWeather().get(0).getCondition(), dto.getCoordinate().getLat(),
+                    dto.getCoordinate().getLon(), dto.getWind().getSpeed(),
+                    dto.getWind().getDeg(), dto.getDateTime());
         } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "OpenWeatherDto is null");
     }
 
@@ -55,8 +65,17 @@ public class OpenWeatherService {
                 + "&appid=" + apiTokenOpenWeather;
         OpenWeatherForecastDto dto = restTemplate.getForObject(url, OpenWeatherForecastDto.class);
         if (Objects.nonNull(dto)) {
-            OpenWeatherThreeHourForecast openWeatherThreeHourForecast = searchForTimeStamp(dto);
-            return new OpenWeatherModel(dto, openWeatherThreeHourForecast);
+            return new OpenWeatherModel(dto.getCity().getName(),
+                    dto.getHourlyArray().get(0).getMainMetrics().getTemp(),
+                    dto.getHourlyArray().get(0).getMainMetrics().getPressure(),
+                    dto.getHourlyArray().get(0).getMainMetrics().getHumidity(),
+                    dto.getHourlyArray().get(0).getMainMetrics().getFeelsLike(),
+                    dto.getHourlyArray().get(0).getWeather().get(0).getCondition(),
+                    dto.getCity().getCoords().getLat(),
+                    dto.getCity().getCoords().getLon(),
+                    dto.getHourlyArray().get(0).getWind().getSpeed(),
+                    dto.getHourlyArray().get(0).getWind().getDeg(),
+                    dto.getHourlyArray().get(0).getDateTime());
         } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "OpenWeatherDto is null");
     }
 
@@ -68,8 +87,17 @@ public class OpenWeatherService {
                 + "&appid=" + apiTokenOpenWeather;
         OpenWeatherForecastDto dto = restTemplate.getForObject(url, OpenWeatherForecastDto.class);
         if (Objects.nonNull(dto)) {
-            OpenWeatherThreeHourForecast timeStamp = searchForTimeStamp(dto);
-            return new OpenWeatherModel(dto, timeStamp);
+            return new OpenWeatherModel(dto.getCity().getName(),
+                    dto.getHourlyArray().get(0).getMainMetrics().getTemp(),
+                    dto.getHourlyArray().get(0).getMainMetrics().getPressure(),
+                    dto.getHourlyArray().get(0).getMainMetrics().getHumidity(),
+                    dto.getHourlyArray().get(0).getMainMetrics().getFeelsLike(),
+                    dto.getHourlyArray().get(0).getWeather().get(0).getCondition(),
+                    dto.getCity().getCoords().getLat(),
+                    dto.getCity().getCoords().getLon(),
+                    dto.getHourlyArray().get(0).getWind().getSpeed(),
+                    dto.getHourlyArray().get(0).getWind().getDeg(),
+                    dto.getHourlyArray().get(0).getDateTime());
         } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "OpenWeatherDto is null");
     }
 

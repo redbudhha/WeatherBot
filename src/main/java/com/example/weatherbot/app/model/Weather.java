@@ -31,7 +31,7 @@ public class Weather {
         return " Temp = " + this.temp + "°C" +
                 "\nPressure = " + this.pressure + "mm. of mercury" +
                 "\nHumidity = " + this.humidity + "%" +
-                "\nSpeed = " + this.speed + " m\\s" +
+                "\nWind speed = " + this.speed + " m\\s" +
                 "\nFeels like = " + this.feelsLike + "°C" +
                 "\nCondition = " + this.condition;
     }

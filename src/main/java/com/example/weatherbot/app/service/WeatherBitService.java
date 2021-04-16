@@ -35,7 +35,10 @@ public class WeatherBitService {
                 + "&country=RU&key=" + apiTokenWeatherBit;
         WeatherBitInfo dto = restTemplate.getForObject(url, WeatherBitInfo.class);
         if (Objects.nonNull(dto)) {
-            return new WeatherBitModel(dto);
+            return new WeatherBitModel(dto.getCityName(), dto.getTemp(),
+                    dto.getPressure(), dto.getHumidity(), dto.getFeelsLike(),
+                    dto.getDesc().getDescription(), dto.getLat(), dto.getLon(),
+                    dto.getWindSpeed(), dto.getWindDeg(), dto.getDateTime());
         } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherBitDto is null");
     }
 
@@ -48,7 +51,10 @@ public class WeatherBitService {
                 + "&key=" + apiTokenWeatherBit;
         WeatherBitInfo dto = restTemplate.getForObject(url, WeatherBitInfo.class);
         if (Objects.nonNull(dto)) {
-            return new WeatherBitModel(dto);
+            return new WeatherBitModel(dto.getCityName(), dto.getTemp(),
+                    dto.getPressure(), dto.getHumidity(), dto.getFeelsLike(),
+                    dto.getDesc().getDescription(), dto.getLat(), dto.getLon(),
+                    dto.getWindSpeed(), dto.getWindDeg(), dto.getDateTime());
         } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherBitDto is null");
     }
 
@@ -62,7 +68,10 @@ public class WeatherBitService {
         WeatherBitForecastDto dto = restTemplate.getForObject(url, WeatherBitForecastDto.class);
         if (Objects.nonNull(dto)) {
             WeatherBitInfo weatherBitInfo = searchForTimeStampWB(dto);
-            return new WeatherBitModel(dto,weatherBitInfo);
+            return new WeatherBitModel(dto.getCityName(), weatherBitInfo.getTemp(),
+                    weatherBitInfo.getPressure(), weatherBitInfo.getHumidity(), weatherBitInfo.getFeelsLike(),
+                    weatherBitInfo.getDesc().getDescription(), dto.getLat(), dto.getLon(),
+                    weatherBitInfo.getWindSpeed(), weatherBitInfo.getWindDeg(), weatherBitInfo.getDateTime());
         } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherBitDto is null");
     }
 
@@ -75,13 +84,16 @@ public class WeatherBitService {
         WeatherBitForecastDto dto = restTemplate.getForObject(url, WeatherBitForecastDto.class);
         if (Objects.nonNull(dto)) {
             WeatherBitInfo weatherBitInfo = searchForTimeStampWB(dto);
-            return new WeatherBitModel(dto,weatherBitInfo);
+            return new WeatherBitModel(dto.getCityName(), weatherBitInfo.getTemp(),
+                    weatherBitInfo.getPressure(), weatherBitInfo.getHumidity(), weatherBitInfo.getFeelsLike(),
+                    weatherBitInfo.getDesc().getDescription(), dto.getLat(), dto.getLon(),
+                    weatherBitInfo.getWindSpeed(), weatherBitInfo.getWindDeg(), weatherBitInfo.getDateTime());
         } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherBitDto is null");
     }
 
     public WeatherBitInfo searchForTimeStampWB(WeatherBitForecastDto dto) {
         Optional<WeatherBitInfo> forecast = dto.getMainInfo().stream()
-                .filter(weather -> weather.getDateTimeForForecast().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
                 .findAny();
         return forecast.orElse(null);
     }
