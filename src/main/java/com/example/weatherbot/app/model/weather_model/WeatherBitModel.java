@@ -9,16 +9,17 @@ import java.time.LocalDateTime;
 @Data
 public class WeatherBitModel {
     private String cityName;
-    private final Double temp;
-    private final Integer pressure;
-    private final Integer humidity;
-    private final Double feelsLike;
-    private final String condition;
-    private final Float lat;
-    private final Float lon;
-    private final Double windSpeed;
-    private final Double windDeg;
-    private final LocalDateTime dateTime;
+    private Double temp;
+    private Integer pressure;
+    private Integer humidity;
+    private Double feelsLike;
+    private String condition;
+    private Float lat;
+    private Float lon;
+    private Double windSpeed;
+    private Double windDeg;
+    private LocalDateTime dateTimeForForecast;
+    private LocalDateTime dateTimeForCurrent;
 
 
     public WeatherBitModel(WeatherBitInfo currentInfo) {
@@ -32,7 +33,7 @@ public class WeatherBitModel {
         this.lon = currentInfo.getLon();
         this.windSpeed = currentInfo.getWindSpeed();
         this.windDeg = currentInfo.getWindDeg();
-        this.dateTime = currentInfo.getDateTime();
+        this.dateTimeForCurrent = currentInfo.getDateTimeForCurrent();
 
     }
 
@@ -47,7 +48,7 @@ public class WeatherBitModel {
         this.lon = forecastDto.getLon();
         this.windSpeed = forecastInfo.getWindSpeed();
         this.windDeg = forecastInfo.getWindDeg();
-        this.dateTime = forecastInfo.getDateTime();
+        this.dateTimeForForecast = forecastInfo.getDateTimeForForecast();
 
     }
 

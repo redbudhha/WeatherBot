@@ -1,6 +1,8 @@
 package com.example.weatherbot.app.dto.weatherapidto;
 
+import com.example.weatherbot.app.utils.UnixTimeStamp;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,12 +10,11 @@ import java.time.LocalDateTime;
 @Data
 public class Location {
 
-    @JsonProperty("location")
+    @JsonProperty("name")
     private String cityName;
 
     @JsonProperty("region")
     private String region;
-
 
     @JsonProperty("country")
     private String country;
@@ -24,7 +25,9 @@ public class Location {
     @JsonProperty("lon")
     private Float lon;
 
-    @JsonProperty("localtime")
+
+    @JsonProperty("localtime_epoch")
+    @JsonDeserialize(using = UnixTimeStamp.class)
     LocalDateTime localTime;
 
 }
