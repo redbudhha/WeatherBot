@@ -1,6 +1,8 @@
 package com.example.weatherbot.app.dto.weatherbitdto;
 
+import com.example.weatherbot.app.utils.UnixTimeStamp;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -28,7 +30,8 @@ public class WeatherBitInfo {
     @JsonProperty("weather")
     private WeatherDescription desc;
 
-    @JsonProperty("datetime")
+    @JsonProperty("moonrise_ts")
+    @JsonDeserialize(using = UnixTimeStamp.class)
     private LocalDateTime dateTime;
 
     @JsonProperty("temp")
