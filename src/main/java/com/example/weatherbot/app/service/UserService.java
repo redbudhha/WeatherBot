@@ -17,30 +17,32 @@ public class UserService {
     private MongoTemplate mongoTemplate;
 
 
-    public User createUser(Update update) {
+    public void createUser(Update update) {
         User user;
         Long chatId = update.getMessage().getChatId();
         String userName = update.getMessage().getFrom().getUserName();
         if (update.getMessage().hasLocation()) {
             Location location = update.getMessage().getLocation();
-            User.Location loc = new User.Location(location.getLatitude(),location.getLongitude());
+            User.Location loc = new User.Location(location.getLatitude(), location.getLongitude());
             user = new User(userName, loc, chatId);
         } else {
             String city = update.getMessage().getText().toLowerCase();
             user = new User(userName, city, chatId);
         }
-        return mongoTemplate.save(user, "user");
+        mongoTemplate.save(user, "user");
     }
 
 
     public List<User> findAll() {
-        return mongoTemplate.findAll(User.class,"user");
+        return mongoTemplate.findAll(User.class, "user");
     }
+
     public User findUserByChatId(Long chatId) {
-       return mongoTemplate.findById(chatId,User.class);
+        return mongoTemplate.findById(chatId, User.class);
     }
+
     public void update(User user) {
-     mongoTemplate.save(user,"user");
+        mongoTemplate.save(user, "user");
     }
 
 

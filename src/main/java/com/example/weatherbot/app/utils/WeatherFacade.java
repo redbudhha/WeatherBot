@@ -4,6 +4,7 @@ import com.example.weatherbot.app.dto.openweatherdto.current.OpenWeatherCurrentD
 import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherForecastDto;
 import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherThreeHourForecast;
 import com.example.weatherbot.app.dto.weatherapidto.current.WeatherAPICurrentDto;
+import com.example.weatherbot.app.dto.weatherapidto.forecast.ForecastDay;
 import com.example.weatherbot.app.dto.weatherapidto.forecast.WeatherAPIForecastDto;
 import com.example.weatherbot.app.dto.weatherbitdto.WeatherBitInfo;
 import com.example.weatherbot.app.dto.weatherbitdto.forecast.WeatherBitForecastDto;
@@ -15,6 +16,7 @@ import com.example.weatherbot.app.model.weather_model.WeatherBitModel;
 import com.example.weatherbot.app.service.OpenWeatherService;
 import com.example.weatherbot.app.service.WeatherApiService;
 import com.example.weatherbot.app.service.WeatherBitService;
+import com.example.weatherbot.app.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +27,14 @@ public class WeatherFacade {
     private final OpenWeatherService openWeatherService;
     private final WeatherApiService weatherApiService;
     private final WeatherBitService weatherBitService;
+    private final WeatherService weatherService;
 
     @Autowired
-    public WeatherFacade(OpenWeatherService openWeatherService, WeatherApiService weatherApiService, WeatherBitService weatherBitService) {
+    public WeatherFacade(OpenWeatherService openWeatherService, WeatherApiService weatherApiService, WeatherBitService weatherBitService,WeatherService weatherService) {
         this.openWeatherService = openWeatherService;
         this.weatherApiService = weatherApiService;
         this.weatherBitService = weatherBitService;
+        this.weatherService = weatherService;
     }
 
     public Weather createRequestToThreeServices(String data, User user) {
@@ -47,32 +51,34 @@ public class WeatherFacade {
             if (data.equals("today")) {
                 weather = createRequestForCurrentWeatherByLocation(lat, lon);
             } else if (data.equals("tomorrow")) {
-                weather = createForecastRequestByLocation(lat,lon);
+                weather = createForecastRequestByLocation(lat, lon);
             }
         }
         return weather;
     }
 
     private Weather createForecastRequestByLocation(Float lat, Float lon) {
-        OpenWeatherForecastDto forecastWeatherFromOWByLocation = openWeatherService.getForecastWeatherFromOWByLocation(lat,lon);
+        OpenWeatherForecastDto forecastWeatherFromOWByLocation = openWeatherService.getForecastWeatherFromOWByLocation(lat, lon);
         OpenWeatherThreeHourForecast openWeatherThreeHourForecast = openWeatherService.searchForTimeStamp(forecastWeatherFromOWByLocation);
         OpenWeatherModel openWeatherModel = new OpenWeatherModel(forecastWeatherFromOWByLocation, openWeatherThreeHourForecast);
-        WeatherAPIForecastDto forecastWeatherFromWAByLocation = weatherApiService.getForecastWeatherFromWAByLocation(lat,lon);
-        //  WeatherApiModel weatherApiModel = new WeatherApiModel(forecastWeatherFromWAByLocation, );
-        WeatherBitForecastDto fromWBByLocation = weatherBitService.getForecastWeatherFromWBByLocation(lat,lon);
-
-        //   WeatherBitModel weatherBitModel = new WeatherBitModel(fromWBByLocation,);
-        //return computeAverageData(3 models);
-        return null;
+        WeatherAPIForecastDto forecastWeatherFromWAByLocation = weatherApiService.getForecastWeatherFromWAByLocation(lat, lon);
+        ForecastDay forecastDay = weatherApiService.searchForTimeStampWA(forecastWeatherFromWAByLocation);
+        WeatherApiModel weatherApiModel = new WeatherApiModel(forecastWeatherFromWAByLocation, forecastDay);
+        WeatherBitForecastDto fromWBByLocation = weatherBitService.getForecastWeatherFromWBByLocation(lat, lon);
+        WeatherBitInfo weatherBitInfo = weatherBitService.searchForTimeStampWB(fromWBByLocation);
+        WeatherBitModel weatherBitModel = new WeatherBitModel(fromWBByLocation, weatherBitInfo);
+        weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
+        return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
     }
 
-    public Weather createRequestForCurrentWeatherByLocation(Float lat,Float lon) {
-        OpenWeatherCurrentDto openWeatherCurrentDto = openWeatherService.getCurrentWeatherFromOWByLocation(lat,lon);
+    public Weather createRequestForCurrentWeatherByLocation(Float lat, Float lon) {
+        OpenWeatherCurrentDto openWeatherCurrentDto = openWeatherService.getCurrentWeatherFromOWByLocation(lat, lon);
         OpenWeatherModel openWeatherModel = new OpenWeatherModel(openWeatherCurrentDto);
-        WeatherAPICurrentDto currentWeatherFromWAByCity = weatherApiService.getCurrentWeatherFromWAByLocation(lat,lon);
+        WeatherAPICurrentDto currentWeatherFromWAByCity = weatherApiService.getCurrentWeatherFromWAByLocation(lat, lon);
         WeatherApiModel weatherApiModel = new WeatherApiModel(currentWeatherFromWAByCity);
-        WeatherBitInfo weatherBitInfo = weatherBitService.getCurrentWeatherFromWBByLocation(lat,lon);
+        WeatherBitInfo weatherBitInfo = weatherBitService.getCurrentWeatherFromWBByLocation(lat, lon);
         WeatherBitModel weatherBitModel = new WeatherBitModel(weatherBitInfo);
+        weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
         return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
 
     }
@@ -81,13 +87,14 @@ public class WeatherFacade {
         OpenWeatherForecastDto forecastWeatherFromOWByCity = openWeatherService.getForecastWeatherFromOWByCity(city);
         OpenWeatherThreeHourForecast openWeatherThreeHourForecast = openWeatherService.searchForTimeStamp(forecastWeatherFromOWByCity);
         OpenWeatherModel openWeatherModel = new OpenWeatherModel(forecastWeatherFromOWByCity, openWeatherThreeHourForecast);
-        WeatherAPIForecastDto forecastWeatherFromWAByCity = weatherApiService.getForecastWeatherFromWAByCity(city);
-      //  WeatherApiModel weatherApiModel = new WeatherApiModel(forecastWeatherFromWAByCity, );
         WeatherBitForecastDto fromWBByCity = weatherBitService.getForecastWeatherFromWBByCity(city);
-
-        //   WeatherBitModel weatherBitModel = new WeatherBitModel(forecastWeatherFromWBByCity,);
-        //return computeAverageData(3 models);
-        return null;
+        WeatherBitInfo weatherBitInfo = weatherBitService.searchForTimeStampWB(fromWBByCity);
+        WeatherBitModel weatherBitModel = new WeatherBitModel(fromWBByCity, weatherBitInfo);
+        WeatherAPIForecastDto forecastWeatherFromWAByCity = weatherApiService.getForecastWeatherFromWAByCity(city);
+        ForecastDay forecastDay = weatherApiService.searchForTimeStampWA(forecastWeatherFromWAByCity);
+        WeatherApiModel weatherApiModel = new WeatherApiModel(forecastWeatherFromWAByCity, forecastDay);
+        weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
+        return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
     }
 
 
@@ -98,26 +105,13 @@ public class WeatherFacade {
         WeatherApiModel weatherApiModel = new WeatherApiModel(currentWeatherFromWAByCity);
         WeatherBitInfo weatherBitInfo = weatherBitService.getCurrentWeatherFromWBByCity(city);
         WeatherBitModel weatherBitModel = new WeatherBitModel(weatherBitInfo);
+        //return new Weather(weatherBitModel.getTemp(), weatherBitModel.getPressure(), weatherBitModel.getHumidity(), weatherBitModel.getWindSpeed(),
+               // weatherBitModel.getFeelsLike(), weatherBitModel.getCondition(), weatherBitModel.getLat(), weatherBitModel.getLon());
+        weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
         return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
-
     }
 
-    public Weather createRequestToOpenWeather(User user, String data) {
-        OpenWeatherModel openWeatherModel = null;
-        if (data.equals("today")) {
-            OpenWeatherCurrentDto openWeatherCurrentDto = openWeatherService.getCurrentByCity(user.getCity());
-            openWeatherModel = new OpenWeatherModel(openWeatherCurrentDto);
-        } else {
-            OpenWeatherForecastDto forecastWeatherFromOWByCity = openWeatherService.getForecastWeatherFromOWByCity(user.getCity());
-            OpenWeatherThreeHourForecast openWeatherThreeHourForecast = openWeatherService.searchForTimeStamp(forecastWeatherFromOWByCity);
-            openWeatherModel = new OpenWeatherModel(forecastWeatherFromOWByCity, openWeatherThreeHourForecast);
-        }
-        return new Weather(openWeatherModel.getTemp(), openWeatherModel.getPressure(), openWeatherModel.getHumidity(), openWeatherModel.getWindSpeed(), openWeatherModel.getFeelsLike(),
-                openWeatherModel.getCondition(), openWeatherModel.getLat(), openWeatherModel.getLon());
-    }
-
-
-    public Weather computeAverageData(WeatherApiModel weatherAPIModel, OpenWeatherModel openWeatherModel, WeatherBitModel weatherBitModel) {
+    private Weather computeAverageData(WeatherApiModel weatherAPIModel, OpenWeatherModel openWeatherModel, WeatherBitModel weatherBitModel) {
         Double temp = (weatherAPIModel.getTemp() + openWeatherModel.getTemp() + weatherBitModel.getTemp()) / 3;
         Integer pressure = (weatherAPIModel.getPressure() + openWeatherModel.getPressure() + weatherBitModel.getPressure()) / 3;
         Integer humidity = (weatherAPIModel.getHumidity() + openWeatherModel.getHumidity() + weatherBitModel.getHumidity()) / 3;
@@ -128,5 +122,6 @@ public class WeatherFacade {
         String condition = openWeatherModel.getCondition();
         return new Weather(temp, pressure, humidity, speed, feelsLike, condition, lat, lon);
     }
+
 
 }

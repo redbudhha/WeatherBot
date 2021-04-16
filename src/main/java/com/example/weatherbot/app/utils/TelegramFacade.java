@@ -42,12 +42,10 @@ public class TelegramFacade {
                             userService.update(user);
                             waitingForCity = false;
                             messageToUser = sendButtonsForChoosingDay(user.getChatId());
-                        }
-                         else {
+                        } else {
                             messageToUser = sendLocationQuestion();
                         }
-                    }
-                    else {
+                    } else {
                         messageToUser = sendKeyBoardWithLocationInputChoice(update.getMessage().getChatId());
                     }
                 } else if (text.equalsIgnoreCase("/help")) {
@@ -63,7 +61,7 @@ public class TelegramFacade {
                 if (Objects.nonNull(user)) {
                     if (update.getMessage().hasLocation()) {
                         Location location = update.getMessage().getLocation();
-                        user.setLocation(new User.Location(location.getLatitude(),location.getLongitude()));
+                        user.setLocation(new User.Location(location.getLatitude(), location.getLongitude()));
                         userService.update(user);
                     }
                 } else {
@@ -139,11 +137,11 @@ public class TelegramFacade {
                 return sendKeyBoardWithLocationInputChoice(chatId);
             default:
                 User user = userService.findUserByChatId(chatId);
-                Weather requestToOpenWeather = weatherFacade.createRequestToOpenWeather(user,data);
-                setLocationIfNotExist(requestToOpenWeather,user);
+                Weather requestToOpenWeather = weatherFacade.createRequestToThreeServices(data, user);
+                setLocationIfNotExist(requestToOpenWeather, user);
                 return messageToUser.setText(requestToOpenWeather.toString()).setChatId(user.getChatId());
-            }
         }
+    }
 
 
     public SendMessage sendLocationQuestion() {
@@ -158,7 +156,8 @@ public class TelegramFacade {
         keyboardMarkup.setKeyboard(rowList);
         return new SendMessage().setText("Which location would you like to use?").setReplyMarkup(keyboardMarkup);
     }
-    public void setLocationIfNotExist(Weather weather,User user){
+
+    public void setLocationIfNotExist(Weather weather, User user) {
         if (user.getLocation() == null) {
             User.Location location = new User.Location(weather.getLat(), weather.getLon());
             user.setLocation(location);

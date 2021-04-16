@@ -1,7 +1,5 @@
 package com.example.weatherbot.app.service;
 
-import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherForecastDto;
-import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherThreeHourForecast;
 import com.example.weatherbot.app.dto.weatherapidto.current.WeatherAPICurrentDto;
 import com.example.weatherbot.app.dto.weatherapidto.forecast.ForecastDay;
 import com.example.weatherbot.app.dto.weatherapidto.forecast.WeatherAPIForecastDto;
@@ -62,9 +60,8 @@ public class WeatherApiService {
     }
     public ForecastDay searchForTimeStampWA(WeatherAPIForecastDto dto) {
         Optional<ForecastDay> forecast = dto.getForecasts().stream()
-                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
                 .findAny();
         return forecast.orElse(null);
     }
-    //возможно, в plusDays нужно передавать 2, т.к. под 1 может храниться прогноз на сегодня
 }

@@ -8,14 +8,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Document
 @Data
 public class WeatherModel {    //класс для бд, объединяющий
     //какое-то поле будет id (есть ли в монго автогенерация?)
     @Id
-    private LocalDate date;
+    private LocalDateTime date;
     @Field
     private OpenWeatherModel openWeatherModel;
     @Field
@@ -23,7 +23,7 @@ public class WeatherModel {    //класс для бд, объединяющи�
     @Field
     private WeatherBitModel weatherBitModel;
 
-    public WeatherModel(LocalDate date, OpenWeatherModel openWeatherModel, WeatherApiModel weatherApiModel, WeatherBitModel weatherBitModel) {
+    public WeatherModel(LocalDateTime date, OpenWeatherModel openWeatherModel, WeatherApiModel weatherApiModel, WeatherBitModel weatherBitModel) {
         this.date = date;
         this.openWeatherModel = openWeatherModel;
         this.weatherApiModel = weatherApiModel;

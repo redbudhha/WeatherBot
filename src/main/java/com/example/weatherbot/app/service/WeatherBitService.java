@@ -1,9 +1,6 @@
 package com.example.weatherbot.app.service;
 
-import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherForecastDto;
-import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherThreeHourForecast;
 import com.example.weatherbot.app.dto.weatherbitdto.WeatherBitInfo;
-import com.example.weatherbot.app.dto.weatherbitdto.current.WeatherBitCurrentDto;
 import com.example.weatherbot.app.dto.weatherbitdto.forecast.WeatherBitForecastDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,9 +63,8 @@ public class WeatherBitService {
 
     public WeatherBitInfo searchForTimeStampWB(WeatherBitForecastDto dto) {
         Optional<WeatherBitInfo> forecast = dto.getMainInfo().stream()
-                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
                 .findAny();
         return forecast.orElse(null);
     }
-    //возможно, в plusDays нужно передавать 2, т.к. под 1 может храниться прогноз на сегодня
 }
