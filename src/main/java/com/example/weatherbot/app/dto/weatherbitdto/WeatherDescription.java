@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Data
 public class WeatherDescription {
+    @JsonProperty("code")
+    private Integer code;
+
     @JsonProperty("description")
     private String description;
 }

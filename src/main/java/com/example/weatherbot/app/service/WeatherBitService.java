@@ -63,7 +63,7 @@ public class WeatherBitService {
 
     public WeatherBitInfo searchForTimeStampWB(WeatherBitForecastDto dto) {
         Optional<WeatherBitInfo> forecast = dto.getMainInfo().stream()
-                .filter(weather -> weather.getDateTimeForForecast().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
                 .findAny();
         return forecast.orElse(null);
     }
