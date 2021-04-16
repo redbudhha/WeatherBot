@@ -3,13 +3,17 @@ package com.example.weatherbot.app.service;
 import com.example.weatherbot.app.dto.weatherapidto.current.WeatherAPICurrentDto;
 import com.example.weatherbot.app.dto.weatherapidto.forecast.ForecastDay;
 import com.example.weatherbot.app.dto.weatherapidto.forecast.WeatherAPIForecastDto;
+import com.example.weatherbot.app.model.weather_model.WeatherApiModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,37 +29,59 @@ public class WeatherApiService {
     /*
     current weather by city name from service "Weather API"
      */
-    public WeatherAPICurrentDto getCurrentWeatherFromWAByCity(String cityName) {
+    public WeatherApiModel getCurrentWeatherFromWAByCity(String cityName) {
         String url = "https://api.weatherapi.com/v1/current.json?key="
                 + apiTokenWeatherAPI + "&q=" + cityName + "&aqi=no";
-        return restTemplate.getForObject(url, WeatherAPICurrentDto.class);
+        WeatherAPICurrentDto dto = restTemplate.getForObject(url, WeatherAPICurrentDto.class);
+        if (Objects.nonNull(dto)) {
+            return new WeatherApiModel(dto);
+        } else {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
+        }
     }
 
     /*
   current weather by location name from service "Weather API"
    */
-    public WeatherAPICurrentDto getCurrentWeatherFromWAByLocation(Float lat, float lon) {
+    public WeatherApiModel getCurrentWeatherFromWAByLocation(Float lat, float lon) {
         String url = "https://api.weatherapi.com/v1/current.json?key="
                 + apiTokenWeatherAPI + "&q=" + lat + "," + lon + "&aqi=no";
-        return restTemplate.getForObject(url, WeatherAPICurrentDto.class);
+        WeatherAPICurrentDto dto = restTemplate.getForObject(url, WeatherAPICurrentDto.class);
+        if (Objects.nonNull(dto)) {
+            return new WeatherApiModel(dto);
+        } else {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
+        }
     }
 
     /*
   forecast weather by city name from service "Weather API"
   */
-    public WeatherAPIForecastDto getForecastWeatherFromWAByCity(String cityName) {
+    public WeatherApiModel getForecastWeatherFromWAByCity(String cityName) {
         String url = "https://api.weatherapi.com/v1/forecast.json?key=" + apiTokenWeatherAPI
                 + "&q=" + cityName + "&days=2&aqi=no&alerts=no";
-        return restTemplate.getForObject(url, WeatherAPIForecastDto.class);
+        WeatherAPIForecastDto dto = restTemplate.getForObject(url, WeatherAPIForecastDto.class);
+        if (Objects.nonNull(dto)) {
+            ForecastDay forecast = searchForTimeStampWA(dto);
+            return new WeatherApiModel(dto,forecast);
+        } else {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
+        }
     }
 
     /*
  forecast weather by location from service "Weather API"
   */
-    public WeatherAPIForecastDto getForecastWeatherFromWAByLocation(Float lat, float lon) {
+    public WeatherApiModel getForecastWeatherFromWAByLocation(Float lat, float lon) {
         String url = "https://api.weatherapi.com/v1/forecast.json?key=" + apiTokenWeatherAPI
                 + "&q=" + lat + "," + lon + "&days=2&aqi=no&alerts=no";
-        return restTemplate.getForObject(url, WeatherAPIForecastDto.class);
+        WeatherAPIForecastDto dto = restTemplate.getForObject(url, WeatherAPIForecastDto.class);
+        if (Objects.nonNull(dto)) {
+            ForecastDay forecast = searchForTimeStampWA(dto);
+            return new WeatherApiModel(dto,forecast);
+        } else {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherApiDto is null");
+        }
 
     }
     public ForecastDay searchForTimeStampWA(WeatherAPIForecastDto dto) {

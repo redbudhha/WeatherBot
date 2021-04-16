@@ -3,13 +3,17 @@ package com.example.weatherbot.app.service;
 import com.example.weatherbot.app.dto.openweatherdto.current.OpenWeatherCurrentDto;
 import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherForecastDto;
 import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherThreeHourForecast;
+import com.example.weatherbot.app.model.weather_model.OpenWeatherModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,46 +27,56 @@ public class OpenWeatherService {
         this.restTemplate = restTemplate;
     }
 
-    public OpenWeatherCurrentDto getCurrentByCity(String cityName) {
+    public OpenWeatherModel getCurrentByCity(String cityName) {
         String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&q=" + cityName + "+&appid=" + apiTokenOpenWeather;
-        return restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
-
+        OpenWeatherCurrentDto dto = restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
+        if (Objects.nonNull(dto)) {
+            return new OpenWeatherModel(dto);
+        } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "OpenWeatherDto is null");
     }
 
     /*
     current weather by location name from service "Open Weather"
      */
-    public OpenWeatherCurrentDto getCurrentWeatherFromOWByLocation(Float lat, Float lon) {
+    public OpenWeatherModel getCurrentWeatherFromOWByLocation(Float lat, Float lon) {
         String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&lat=" + lat + "&lon=" + lon
                 + "&appid=" + apiTokenOpenWeather;
-        return restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
+        OpenWeatherCurrentDto dto = restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
+        if (Objects.nonNull(dto)) {
+            return new OpenWeatherModel(dto);
+        } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "OpenWeatherDto is null");
     }
 
     /*
     forecast weather for the next day from by city name service "Open Weather"
      */
-    public OpenWeatherForecastDto getForecastWeatherFromOWByCity(String cityName) {
+    public OpenWeatherModel getForecastWeatherFromOWByCity(String cityName) {
         String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&q=" + cityName + "&units=metric&cnt=16"
                 + "&appid=" + apiTokenOpenWeather;
-        return restTemplate.getForObject(url, OpenWeatherForecastDto.class);
-
+        OpenWeatherForecastDto dto = restTemplate.getForObject(url, OpenWeatherForecastDto.class);
+        if (Objects.nonNull(dto)) {
+            OpenWeatherThreeHourForecast openWeatherThreeHourForecast = searchForTimeStamp(dto);
+            return new OpenWeatherModel(dto, openWeatherThreeHourForecast);
+        } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "OpenWeatherDto is null");
     }
 
     /*
     forecast weather for the next day from by location service "Open Weather"
      */
-    public OpenWeatherForecastDto getForecastWeatherFromOWByLocation(Float lat, Float lon) {
+    public OpenWeatherModel getForecastWeatherFromOWByLocation(Float lat, Float lon) {
         String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&lat=" + lat + "&lon=" + lon + "&cnt=16"
                 + "&appid=" + apiTokenOpenWeather;
-        return restTemplate.getForObject(url, OpenWeatherForecastDto.class);
-
+        OpenWeatherForecastDto dto = restTemplate.getForObject(url, OpenWeatherForecastDto.class);
+        if (Objects.nonNull(dto)) {
+            OpenWeatherThreeHourForecast timeStamp = searchForTimeStamp(dto);
+            return new OpenWeatherModel(dto, timeStamp);
+        } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "OpenWeatherDto is null");
     }
 
     public OpenWeatherThreeHourForecast searchForTimeStamp(OpenWeatherForecastDto dto) {
         Optional<OpenWeatherThreeHourForecast> forecast = dto.getHourlyArray().stream()
-                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.NOON).toString()))
+                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15, 0)).toString()))
                 .findAny();
         return forecast.orElse(null);
     }
-    //возможно, в plusDays нужно передавать 2, т.к. под 1 может храниться прогноз на сегодня
 }

@@ -2,13 +2,17 @@ package com.example.weatherbot.app.service;
 
 import com.example.weatherbot.app.dto.weatherbitdto.WeatherBitInfo;
 import com.example.weatherbot.app.dto.weatherbitdto.forecast.WeatherBitForecastDto;
+import com.example.weatherbot.app.model.weather_model.WeatherBitModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,39 +30,53 @@ public class WeatherBitService {
     /*
     current weather by city name from service "Weather bit"
      */
-    public WeatherBitInfo getCurrentWeatherFromWBByCity(String cityName) {
+    public WeatherBitModel getCurrentWeatherFromWBByCity(String cityName) {
         String url = "https://api.weatherbit.io/v2.0/current?city=" + cityName
                 + "&country=RU&key=" + apiTokenWeatherBit;
-        return restTemplate.getForObject(url, WeatherBitInfo.class);
+        WeatherBitInfo dto = restTemplate.getForObject(url, WeatherBitInfo.class);
+        if (Objects.nonNull(dto)) {
+            return new WeatherBitModel(dto);
+        } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherBitDto is null");
     }
 
 
     /*
         current weather by location name from service "Weather bit"
          */
-    public WeatherBitInfo getCurrentWeatherFromWBByLocation(Float lat, float lon) {
+    public WeatherBitModel getCurrentWeatherFromWBByLocation(Float lat, float lon) {
         String url = "https://api.weatherbit.io/v2.0/current?lat=" + lat + "&lon=" + lon
                 + "&key=" + apiTokenWeatherBit;
-        return restTemplate.getForObject(url, WeatherBitInfo.class);
+        WeatherBitInfo dto = restTemplate.getForObject(url, WeatherBitInfo.class);
+        if (Objects.nonNull(dto)) {
+            return new WeatherBitModel(dto);
+        } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherBitDto is null");
     }
 
 
     /*
    forecast weather by city name from service "Weather bit"
     */
-    public WeatherBitForecastDto getForecastWeatherFromWBByCity(String cityName) {
+    public WeatherBitModel getForecastWeatherFromWBByCity(String cityName) {
         String url = "https://api.weatherbit.io/v2.0/forecast/daily?city=" + cityName
                 + "&key=" + apiTokenWeatherBit;
-        return restTemplate.getForObject(url, WeatherBitForecastDto.class);
+        WeatherBitForecastDto dto = restTemplate.getForObject(url, WeatherBitForecastDto.class);
+        if (Objects.nonNull(dto)) {
+            WeatherBitInfo weatherBitInfo = searchForTimeStampWB(dto);
+            return new WeatherBitModel(dto,weatherBitInfo);
+        } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherBitDto is null");
     }
 
     /*
     forecast weather by location from service "Weather Bit"
      */
-    public WeatherBitForecastDto getForecastWeatherFromWBByLocation(Float lat, float lon) {
+    public WeatherBitModel getForecastWeatherFromWBByLocation(Float lat, float lon) {
         String url = "https://api.weatherbit.io/v2.0/forecast/daily?&lat=" + lat + "&lon=" + lon
                 + "&key=" + apiTokenWeatherBit;
-        return restTemplate.getForObject(url, WeatherBitForecastDto.class);
+        WeatherBitForecastDto dto = restTemplate.getForObject(url, WeatherBitForecastDto.class);
+        if (Objects.nonNull(dto)) {
+            WeatherBitInfo weatherBitInfo = searchForTimeStampWB(dto);
+            return new WeatherBitModel(dto,weatherBitInfo);
+        } else throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"WeatherBitDto is null");
     }
 
     public WeatherBitInfo searchForTimeStampWB(WeatherBitForecastDto dto) {
