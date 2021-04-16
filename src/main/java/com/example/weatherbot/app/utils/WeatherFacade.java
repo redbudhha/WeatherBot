@@ -4,10 +4,7 @@ import com.example.weatherbot.app.dto.openweatherdto.current.OpenWeatherCurrentD
 import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherForecastDto;
 import com.example.weatherbot.app.dto.openweatherdto.forecast.OpenWeatherThreeHourForecast;
 import com.example.weatherbot.app.dto.weatherapidto.current.WeatherAPICurrentDto;
-import com.example.weatherbot.app.dto.weatherapidto.forecast.ForecastDay;
-import com.example.weatherbot.app.dto.weatherapidto.forecast.WeatherAPIForecastDto;
 import com.example.weatherbot.app.dto.weatherbitdto.WeatherBitInfo;
-import com.example.weatherbot.app.dto.weatherbitdto.forecast.WeatherBitForecastDto;
 import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.model.weather_model.OpenWeatherModel;
@@ -61,14 +58,17 @@ public class WeatherFacade {
         OpenWeatherForecastDto forecastWeatherFromOWByLocation = openWeatherService.getForecastWeatherFromOWByLocation(lat, lon);
         OpenWeatherThreeHourForecast openWeatherThreeHourForecast = openWeatherService.searchForTimeStamp(forecastWeatherFromOWByLocation);
         OpenWeatherModel openWeatherModel = new OpenWeatherModel(forecastWeatherFromOWByLocation, openWeatherThreeHourForecast);
-        WeatherAPIForecastDto forecastWeatherFromWAByLocation = weatherApiService.getForecastWeatherFromWAByLocation(lat, lon);
+        /*WeatherAPIForecastDto forecastWeatherFromWAByLocation = weatherApiService.getForecastWeatherFromWAByLocation(lat, lon);
         ForecastDay forecastDay = weatherApiService.searchForTimeStampWA(forecastWeatherFromWAByLocation);
         WeatherApiModel weatherApiModel = new WeatherApiModel(forecastWeatherFromWAByLocation, forecastDay);
         WeatherBitForecastDto fromWBByLocation = weatherBitService.getForecastWeatherFromWBByLocation(lat, lon);
         WeatherBitInfo weatherBitInfo = weatherBitService.searchForTimeStampWB(fromWBByLocation);
         WeatherBitModel weatherBitModel = new WeatherBitModel(fromWBByLocation, weatherBitInfo);
         weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
-        return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
+        return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);*/
+        weatherService.save(null,openWeatherModel,null);
+        return new Weather(openWeatherModel.getTemp(), openWeatherModel.getPressure(), openWeatherModel.getHumidity(),openWeatherModel.getWindSpeed(),
+                openWeatherModel.getFeelsLike(), openWeatherModel.getCondition(), openWeatherModel.getLat(), openWeatherModel.getLon());
     }
 
     public Weather createRequestForCurrentWeatherByLocation(Float lat, Float lon) {
@@ -87,28 +87,31 @@ public class WeatherFacade {
         OpenWeatherForecastDto forecastWeatherFromOWByCity = openWeatherService.getForecastWeatherFromOWByCity(city);
         OpenWeatherThreeHourForecast openWeatherThreeHourForecast = openWeatherService.searchForTimeStamp(forecastWeatherFromOWByCity);
         OpenWeatherModel openWeatherModel = new OpenWeatherModel(forecastWeatherFromOWByCity, openWeatherThreeHourForecast);
-        WeatherBitForecastDto fromWBByCity = weatherBitService.getForecastWeatherFromWBByCity(city);
+      /*  WeatherBitForecastDto fromWBByCity = weatherBitService.getForecastWeatherFromWBByCity(city);
         WeatherBitInfo weatherBitInfo = weatherBitService.searchForTimeStampWB(fromWBByCity);
         WeatherBitModel weatherBitModel = new WeatherBitModel(fromWBByCity, weatherBitInfo);
         WeatherAPIForecastDto forecastWeatherFromWAByCity = weatherApiService.getForecastWeatherFromWAByCity(city);
         ForecastDay forecastDay = weatherApiService.searchForTimeStampWA(forecastWeatherFromWAByCity);
         WeatherApiModel weatherApiModel = new WeatherApiModel(forecastWeatherFromWAByCity, forecastDay);
-        weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
-        return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
+       */ //weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
+        return new Weather(openWeatherModel.getTemp(), openWeatherModel.getPressure(), openWeatherModel.getHumidity(),openWeatherModel.getWindSpeed(),
+                openWeatherModel.getFeelsLike(), openWeatherModel.getCondition(), openWeatherModel.getLat(), openWeatherModel.getLon());
+        //return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
     }
 
 
     public Weather createRequestForCurrentWeatherByCity(String city) {
         OpenWeatherCurrentDto openWeatherCurrentDto = openWeatherService.getCurrentByCity(city);
         OpenWeatherModel openWeatherModel = new OpenWeatherModel(openWeatherCurrentDto);
-        WeatherAPICurrentDto currentWeatherFromWAByCity = weatherApiService.getCurrentWeatherFromWAByCity(city);
-        WeatherApiModel weatherApiModel = new WeatherApiModel(currentWeatherFromWAByCity);
-        WeatherBitInfo weatherBitInfo = weatherBitService.getCurrentWeatherFromWBByCity(city);
-        WeatherBitModel weatherBitModel = new WeatherBitModel(weatherBitInfo);
-        //return new Weather(weatherBitModel.getTemp(), weatherBitModel.getPressure(), weatherBitModel.getHumidity(), weatherBitModel.getWindSpeed(),
-               // weatherBitModel.getFeelsLike(), weatherBitModel.getCondition(), weatherBitModel.getLat(), weatherBitModel.getLon());
-        weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
-        return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
+       // WeatherAPICurrentDto currentWeatherFromWAByCity = weatherApiService.getCurrentWeatherFromWAByCity(city);
+      //  WeatherApiModel weatherApiModel = new WeatherApiModel(currentWeatherFromWAByCity);
+        //WeatherBitInfo weatherBitInfo = weatherBitService.getCurrentWeatherFromWBByCity(city);
+      //  WeatherBitModel weatherBitModel = new WeatherBitModel(weatherBitInfo);
+        System.out.println(weatherService.save(null, openWeatherModel, null));
+        return new Weather(openWeatherModel.getTemp(), openWeatherModel.getPressure(), openWeatherModel.getHumidity(),openWeatherModel.getWindSpeed(),
+                openWeatherModel.getFeelsLike(), openWeatherModel.getCondition(), openWeatherModel.getLat(), openWeatherModel.getLon());
+        //weatherService.save(weatherBitModel,openWeatherModel,weatherApiModel);
+       // return computeAverageData(weatherApiModel, openWeatherModel, weatherBitModel);
     }
 
     private Weather computeAverageData(WeatherApiModel weatherAPIModel, OpenWeatherModel openWeatherModel, WeatherBitModel weatherBitModel) {

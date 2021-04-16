@@ -46,6 +46,7 @@ public class OpenWeatherModel {
         this.windSpeed = tomorrowForecast.getWind().getSpeed();
         this.windDeg = tomorrowForecast.getWind().getDeg();
         this.dateTime = tomorrowForecast.getDateTime();
+        this.condition = tomorrowForecast.getWeather().get(0).getCondition();
     }
 
 }

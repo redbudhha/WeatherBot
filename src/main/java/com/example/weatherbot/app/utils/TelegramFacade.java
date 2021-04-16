@@ -4,6 +4,7 @@ import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.service.UserService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -122,7 +123,6 @@ public class TelegramFacade {
     }
 
     public SendMessage processCallBackQuery(CallbackQuery query) {
-        SendMessage messageToUser = new SendMessage();
         String data = query.getData();
         Long chatId = query.getMessage().getChatId();
         switch (data) {
@@ -130,16 +130,22 @@ public class TelegramFacade {
                 return sendForRequestLocation(chatId);
             case "city":
                 waitingForCity = true;
-                return messageToUser.setChatId(chatId).setText("Insert city");
+                return new SendMessage().setChatId(chatId).setText("Insert city");
             case "previous":
                 return sendButtonsForChoosingDay(chatId);
             case "new":
                 return sendKeyBoardWithLocationInputChoice(chatId);
             default:
                 User user = userService.findUserByChatId(chatId);
-                Weather requestToOpenWeather = weatherFacade.createRequestToThreeServices(data, user);
-                setLocationIfNotExist(requestToOpenWeather, user);
-                return messageToUser.setText(requestToOpenWeather.toString()).setChatId(user.getChatId());
+                try {
+                    Weather requestToOpenWeather = weatherFacade.createRequestToThreeServices(data, user);
+                    setLocationIfNotExist(requestToOpenWeather, user);
+                    return new SendMessage().setText(requestToOpenWeather.toString()).setChatId(user.getChatId());
+                } catch(HttpClientErrorException e) {
+                    waitingForCity = true;
+                    return new SendMessage().setText("Incorrect city name. Please try again").setChatId(chatId);
+                }
+
         }
     }
 

@@ -11,7 +11,7 @@ public class WeatherAPICurrentDto {
     @JsonProperty("location")
     private Location location;
 
-    @JsonProperty("location")
+    @JsonProperty("current")
     private CurrentWeatherInfo info;
 
     @JsonProperty("wind_kph")
