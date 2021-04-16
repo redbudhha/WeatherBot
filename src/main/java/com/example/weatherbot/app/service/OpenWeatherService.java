@@ -24,7 +24,7 @@ public class OpenWeatherService {
     }
 
     public OpenWeatherCurrentDto getCurrentByCity(String cityName) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "+&appid=" + apiTokenOpenWeather;
+        String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&q=" + cityName + "+&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
 
     }
@@ -42,7 +42,7 @@ public class OpenWeatherService {
     forecast weather for the next day from by city name service "Open Weather"
      */
     public OpenWeatherForecastDto getForecastWeatherFromOWByCity(String cityName) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&units=metric&cnt=16"
+        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&q=" + cityName + "&units=metric&cnt=16"
                 + "&appid=" + apiTokenOpenWeather;
         return restTemplate.getForObject(url, OpenWeatherForecastDto.class);
 
@@ -64,4 +64,5 @@ public class OpenWeatherService {
                 .findAny();
         return forecast.orElse(null);
     }
+    //возможно, в plusDays нужно передавать 2, т.к. под 1 может храниться прогноз на сегодня
 }

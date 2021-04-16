@@ -1,19 +1,22 @@
 package com.example.weatherbot.app.dto.weatherapidto.forecast;
 
+import com.example.weatherbot.app.utils.UnixTimeStamp;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
 public class ForecastDay {
-   @JsonProperty("date")
-    LocalDateTime dateTime;
+    @JsonProperty("date_epoch")
+    @JsonDeserialize(using = UnixTimeStamp.class)
+    private LocalDateTime dateTime;
 
-   @JsonProperty("day")
+    @JsonProperty("day")
     DayWeatherInfo weatherInfo;
 
-   @JsonProperty("hour")
+    @JsonProperty("hour")
     HourForecast hourForecast;
 
     public LocalDateTime getDateTime() {
