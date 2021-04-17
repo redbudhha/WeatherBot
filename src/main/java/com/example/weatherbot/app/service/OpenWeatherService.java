@@ -24,6 +24,7 @@ public class OpenWeatherService {
 
     public OpenWeatherModel getCurrentByCity(String cityName) {
         String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&q=" + cityName + "&appid=" + apiTokenOpenWeather;
+        System.out.println(cityName);
         return getCurrentOpenWeatherModel(url);
     }
 
@@ -83,7 +84,7 @@ public class OpenWeatherService {
                     dto.getCoordinate().getLon(), dto.getWind().getSpeed(),
                     dto.getWind().getDeg(), dto.getDateTime());
         } else {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Wrong city name");
         }
     }
 

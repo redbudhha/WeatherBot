@@ -5,15 +5,16 @@ import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.model.weather_model.OpenWeatherModel;
 import com.example.weatherbot.app.model.weather_model.WeatherApiModel;
 import com.example.weatherbot.app.model.weather_model.WeatherBitModel;
-import com.example.weatherbot.app.service.OpenWeatherService;
-import com.example.weatherbot.app.service.WeatherApiService;
-import com.example.weatherbot.app.service.WeatherBitService;
-import com.example.weatherbot.app.service.WeatherService;
+import com.example.weatherbot.app.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class WeatherFacade {
@@ -21,13 +22,15 @@ public class WeatherFacade {
     private final WeatherApiService weatherApiService;
     private final WeatherBitService weatherBitService;
     private final WeatherService weatherService;
+    private final UserService userService;
 
     @Autowired
-    public WeatherFacade(OpenWeatherService openWeatherService, WeatherApiService weatherApiService, WeatherBitService weatherBitService, WeatherService weatherService) {
+    public WeatherFacade(OpenWeatherService openWeatherService, WeatherApiService weatherApiService, WeatherBitService weatherBitService, WeatherService weatherService,UserService userService) {
         this.openWeatherService = openWeatherService;
         this.weatherApiService = weatherApiService;
         this.weatherBitService = weatherBitService;
         this.weatherService = weatherService;
+        this.userService = userService;
     }
 
     public Weather createRequestToThreeServices(String data, User user) {
@@ -98,11 +101,27 @@ public class WeatherFacade {
         Float lat = Float.parseFloat(String.format("%.2f",weatherAPIModel.getLat()).replace(",","."));
         Float lon = Float.parseFloat(String.format("%.2f",weatherAPIModel.getLon()).replace(",","."));
         String condition = openWeatherModel.getCondition();
-        LocalDate date = openWeatherModel.getDateTime().toLocalDate();
+        LocalDate date = weatherBitModel.getDateTime().toLocalDate();
         Weather weather = new Weather(cityName, temp, pressure, humidity, speed, feelsLike, condition, lat, lon, date);
         weatherService.save(weather);
         return weather;
     }
+    //@Scheduled(cron = "0 9/12 * *")
+    @Scheduled(fixedRate = 900000)
+    private void createDailyRequestToWeatherApi(){
+        List<User> users = userService.findAll();
+        if (!users.isEmpty()) {
+            Set<String> cities = users.stream().map(User::getCity).collect(Collectors.toSet());
+            List<Weather> current = cities.parallelStream()
+                    .map(this::createRequestForCurrentWeatherByCity)
+                    .collect(Collectors.toList());
+            List<Weather> forecast = cities.parallelStream()
+                    .map(this::createForecastRequestByCity)
+                    .collect(Collectors.toList());
+        }
+
+    }
+
 
 
 }

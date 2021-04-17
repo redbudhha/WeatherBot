@@ -28,7 +28,7 @@ public class UserService {
             User.Location loc = new User.Location(lat,lon);
             user = new User(userName, loc, chatId);
         } else {
-            String city = update.getMessage().getText().toLowerCase();
+            String city = update.getMessage().getText().toLowerCase().replaceAll("-"," ").trim();
             user = new User(userName, city, chatId);
         }
         mongoTemplate.save(user, "user");

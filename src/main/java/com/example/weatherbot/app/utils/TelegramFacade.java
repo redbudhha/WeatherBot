@@ -169,9 +169,8 @@ public class TelegramFacade {
         if (user.getLocation() == null) {
             User.Location location = new User.Location(weather.getLat(), weather.getLon());
             user.setLocation(location);
-        } else {
-            user.setCity(weather.getCityName());
         }
+        user.setCity(weather.getCityName());
         userService.update(user);
 
     }

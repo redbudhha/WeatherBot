@@ -5,7 +5,9 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -23,6 +25,7 @@ public class Weather {
     private Float lat;
     private Float lon;
     private LocalDate date;
+    private LocalTime time;
 
     public Weather(String cityName, Double temp, Integer pressure, Integer humidity, Double speed, Double feelsLike, String condition, Float lat, Float lon, LocalDate date) {
         this.cityName = cityName;
@@ -35,17 +38,18 @@ public class Weather {
         this.lat = lat;
         this.lon = lon;
         this.date = date;
+        this.time = LocalTime.now();
     }
 
     @Override
     public String toString() {
         return " City name: " + this.cityName +
                 "\n" +
-                "\nTemperature = " + this.temp + "°C" +
+                "\nTemperature = " + new DecimalFormat("0").format(this.temp) + "°C" +
                 "\nPressure = " + this.pressure + " mm. of mercury" +
                 "\nHumidity = " + this.humidity + "%" +
-                "\nWind speed = " + this.speed + " m\\s" +
-                "\nFeels like = " + this.feelsLike + "°C" +
+                "\nWind speed = " + new DecimalFormat("0").format(this.speed) + " m\\s" +
+                "\nFeels like = " + new DecimalFormat("0").format(this.feelsLike) + "°C" +
                 "\nCondition = " + this.condition;
     }
 }

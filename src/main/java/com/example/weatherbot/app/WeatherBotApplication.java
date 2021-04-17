@@ -9,9 +9,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
 
 @EnableMongoRepositories
+@EnableScheduling
 @SpringBootApplication
 public class WeatherBotApplication implements CommandLineRunner {
     @Autowired
@@ -24,6 +26,6 @@ public class WeatherBotApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args)  {
-        template.findAllAndRemove(Query.query(Criteria.where("userName").is("Iana_Sokolova")), User.class);
+        template.findAllAndRemove(Query.query(Criteria.where("userName").is("Yana")), User.class);
     }
 }

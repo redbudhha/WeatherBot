@@ -33,7 +33,7 @@ public class WeatherService {
                                 && weather.getLon().equals(user.getLocation().getLon())
                                 && weather.getDate().equals(date))
                         .findAny().orElse(null);
-                
+
             } else {
                 return weatherList.stream()
                         .filter(weather -> weather.getCityName().equals(user.getCity()) && weather.getDate().equals(date))
