@@ -1,16 +1,15 @@
 package com.example.weatherbot.app.service;
 
-import com.example.weatherbot.app.dto.weatherbitdto.WeatherBitInfo;
 import com.example.weatherbot.app.dto.weatherbitdto.current.WeatherBitCurrentDto;
 import com.example.weatherbot.app.dto.weatherbitdto.forecast.WeatherBitForecastDto;
+import com.example.weatherbot.app.model.weather_model.WeatherBitModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class WeatherBitService {
@@ -22,50 +21,76 @@ public class WeatherBitService {
     public WeatherBitService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
-
-
     /*
     current weather by city name from service "Weather bit"
      */
-    public WeatherBitCurrentDto getCurrentWeatherFromWBByCity(String cityName) {
+    public WeatherBitModel getCurrentWeatherFromWBByCity(String cityName) {
         String url = "https://api.weatherbit.io/v2.0/current?city=" + cityName
                 + "&key=" + apiTokenWeatherBit;
-        return restTemplate.getForObject(url, WeatherBitCurrentDto.class);
+        return getCurrentWeatherBitModel(url);
     }
-
-
     /*
         current weather by location name from service "Weather bit"
          */
-    public WeatherBitCurrentDto getCurrentWeatherFromWBByLocation(Float lat, float lon) {
+    public WeatherBitModel getCurrentWeatherFromWBByLocation(Float lat, float lon) {
         String url = "https://api.weatherbit.io/v2.0/current?lat=" + lat + "&lon=" + lon
                 + "&key=" + apiTokenWeatherBit;
-        return restTemplate.getForObject(url, WeatherBitCurrentDto.class);
+        return getCurrentWeatherBitModel(url);
     }
 
-
+    private WeatherBitModel getCurrentWeatherBitModel(String url) {
+        WeatherBitCurrentDto dto = restTemplate.getForObject(url, WeatherBitCurrentDto.class);
+        if (Objects.nonNull(dto)) {
+            return new WeatherBitModel(dto.getMainInfo().get(0).getCityName(),
+                    dto.getMainInfo().get(0).getTemp(),
+                    dto.getMainInfo().get(0).getPressure(),
+                    dto.getMainInfo().get(0).getHumidity(),
+                    dto.getMainInfo().get(0).getFeelsLike(),
+                    dto.getMainInfo().get(0).getDesc().getDescription(),
+                    dto.getMainInfo().get(0).getLat(),
+                    dto.getMainInfo().get(0).getLon(),
+                    dto.getMainInfo().get(0).getWindSpeed(),
+                    dto.getMainInfo().get(0).getWindDeg(),
+                    dto.getMainInfo().get(0).getDateTime());
+        } else {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
+        }
+    }
     /*
    forecast weather by city name from service "Weather bit"
     */
-    public WeatherBitForecastDto getForecastWeatherFromWBByCity(String cityName) {
+    public WeatherBitModel getForecastWeatherFromWBByCity(String cityName) {
         String url = "https://api.weatherbit.io/v2.0/forecast/daily?city=" + cityName
                 + "&key=" + apiTokenWeatherBit;
-        return restTemplate.getForObject(url, WeatherBitForecastDto.class);
+        return getWeatherBitModel(url);
+    }
+
+    private WeatherBitModel getWeatherBitModel(String url) {
+        WeatherBitForecastDto dto = restTemplate.getForObject(url, WeatherBitForecastDto.class);
+        if (Objects.nonNull(dto)) {
+            return new WeatherBitModel(dto.getCityName(),
+                    dto.getMainInfoForecast().get(0).getTemp(),
+                    dto.getMainInfoForecast().get(0).getPressure(),
+                    dto.getMainInfoForecast().get(0).getHumidity(),
+                    dto.getMainInfoForecast().get(0).getFeelsLike(),
+                    dto.getMainInfoForecast().get(0).getDesc().getDescription(),
+                    dto.getLat(),
+                    dto.getLon(),
+                    dto.getMainInfoForecast().get(0).getWindSpeed(),
+                    dto.getMainInfoForecast().get(0).getWindDeg(),
+                    dto.getMainInfoForecast().get(0).getDateTime());
+        } else {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
+        }
     }
 
     /*
     forecast weather by location from service "Weather Bit"
      */
-    public WeatherBitForecastDto getForecastWeatherFromWBByLocation(Float lat, float lon) {
+    public WeatherBitModel getForecastWeatherFromWBByLocation(Float lat, float lon) {
         String url = "https://api.weatherbit.io/v2.0/forecast/daily?&lat=" + lat + "&lon=" + lon
                 + "&key=" + apiTokenWeatherBit;
-        return restTemplate.getForObject(url, WeatherBitForecastDto.class);
+        return getWeatherBitModel(url);
     }
 
-//    public WeatherBitInfo searchForTimeStampWB(WeatherBitForecastDto dto) {
-//        Optional<WeatherBitInfo> forecast = dto.getMainInfo().stream()
-//                .filter(weather -> weather.getDateTime().toString().equals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(15,0)).toString()))
-//                .findAny();
-//        return forecast.orElse(null);
-//    }
 }
