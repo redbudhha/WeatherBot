@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Objects;
+
 @Document
 public class User {
     @Field
@@ -39,6 +41,19 @@ public class User {
 
         public void setLon(Float lon) {
             this.lon = lon;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Location)) return false;
+            Location location = (Location) o;
+            return lat.equals(location.lat) && lon.equals(location.lon);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(lat, lon);
         }
 
         @Override

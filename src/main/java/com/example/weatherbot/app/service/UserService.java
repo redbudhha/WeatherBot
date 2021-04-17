@@ -23,7 +23,9 @@ public class UserService {
         String userName = update.getMessage().getFrom().getUserName();
         if (update.getMessage().hasLocation()) {
             Location location = update.getMessage().getLocation();
-            User.Location loc = new User.Location(location.getLatitude(), location.getLongitude());
+            Float lat =  Float.parseFloat(String.format("%.2f", location.getLatitude()).replace(",", "."));
+            Float lon = Float.parseFloat(String.format("%.2f", location.getLongitude()).replace(",", "."));
+            User.Location loc = new User.Location(lat,lon);
             user = new User(userName, loc, chatId);
         } else {
             String city = update.getMessage().getText().toLowerCase();

@@ -11,8 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.telegram.telegrambots.ApiContextInitializer;
 
-import java.time.format.DateTimeFormatter;
-
 @EnableMongoRepositories
 @SpringBootApplication
 public class WeatherBotApplication implements CommandLineRunner {
@@ -27,6 +25,5 @@ public class WeatherBotApplication implements CommandLineRunner {
     @Override
     public void run(String... args)  {
         template.findAllAndRemove(Query.query(Criteria.where("userName").is("Iana_Sokolova")), User.class);
-        DateTimeFormatter DEFAULT_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     }
 }

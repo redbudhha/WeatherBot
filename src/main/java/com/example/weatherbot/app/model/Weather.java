@@ -2,10 +2,17 @@ package com.example.weatherbot.app.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
+@Document
 public class Weather {
+    @Id
+    private String id;
     private final String cityName;
     private final Double temp;
     private final Integer pressure;
@@ -15,8 +22,9 @@ public class Weather {
     private String condition;
     private Float lat;
     private Float lon;
+    private LocalDate date;
 
-    public Weather(String cityName, Double temp, Integer pressure, Integer humidity, Double speed, Double feelsLike, String condition, Float lat, Float lon) {
+    public Weather(String cityName, Double temp, Integer pressure, Integer humidity, Double speed, Double feelsLike, String condition, Float lat, Float lon, LocalDate date) {
         this.cityName = cityName;
         this.temp = temp;
         this.pressure = pressure;
@@ -26,6 +34,7 @@ public class Weather {
         this.condition = condition;
         this.lat = lat;
         this.lon = lon;
+        this.date = date;
     }
 
     @Override

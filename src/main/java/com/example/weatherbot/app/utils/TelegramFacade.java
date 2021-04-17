@@ -1,7 +1,7 @@
 package com.example.weatherbot.app.utils;
 
-import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.model.Weather;
+import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.service.UserService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -16,7 +16,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class TelegramFacade {
@@ -101,8 +104,8 @@ public class TelegramFacade {
 
     public SendMessage sendButtonsForChoosingDay(long chatId) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        InlineKeyboardButton currentWeatherButton = new InlineKeyboardButton("Current weather forecast").setCallbackData("today");
-        InlineKeyboardButton tomorrow = new InlineKeyboardButton("Tomorrow weather forecast").setCallbackData("tomorrow");
+        InlineKeyboardButton currentWeatherButton = new InlineKeyboardButton("Current weather").setCallbackData("today");
+        InlineKeyboardButton tomorrow = new InlineKeyboardButton("Tomorrow weather").setCallbackData("tomorrow");
         List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
         keyboardRow.add(currentWeatherButton);
         keyboardRow.add(tomorrow);
@@ -139,7 +142,7 @@ public class TelegramFacade {
                 User user = userService.findUserByChatId(chatId);
                 try {
                     Weather requestToOpenWeather = weatherFacade.createRequestToThreeServices(data, user);
-                    setLocationIfNotExist(requestToOpenWeather, user);
+                    setLocationOrCityIfNotExists(requestToOpenWeather, user);
                     return new SendMessage().setText(requestToOpenWeather.toString()).setChatId(user.getChatId());
                 } catch(HttpClientErrorException e) {
                     waitingForCity = true;
@@ -148,7 +151,6 @@ public class TelegramFacade {
 
         }
     }
-
 
     public SendMessage sendLocationQuestion() {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
@@ -163,14 +165,17 @@ public class TelegramFacade {
         return new SendMessage().setText("Which location would you like to use?").setReplyMarkup(keyboardMarkup);
     }
 
-    public void setLocationIfNotExist(Weather weather, User user) {
+    public void setLocationOrCityIfNotExists(Weather weather, User user) {
         if (user.getLocation() == null) {
             User.Location location = new User.Location(weather.getLat(), weather.getLon());
             user.setLocation(location);
-            userService.update(user);
+        } else {
+            user.setCity(weather.getCityName());
         }
+        userService.update(user);
 
     }
+
 
 }
 
