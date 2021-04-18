@@ -7,6 +7,7 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
@@ -56,6 +57,14 @@ public class WeatherBot extends TelegramWebhookBot {
 
     public void setBotToken(String botToken) {
         this.botToken = botToken;
+    }
+
+    public void executeMethod(BotApiMethod<?> method) {
+        try {
+            execute(method);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     @PostConstruct

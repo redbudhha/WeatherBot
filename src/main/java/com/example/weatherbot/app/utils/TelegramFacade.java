@@ -1,5 +1,6 @@
 package com.example.weatherbot.app.utils;
 
+import com.example.weatherbot.app.bot.WeatherBot;
 import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.service.UserService;
@@ -16,10 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class TelegramFacade {
@@ -27,15 +25,19 @@ public class TelegramFacade {
     private final UserService userService;
     private final WeatherFacade weatherFacade;
     private boolean waitingForCity = false;
+    private final WeatherBot weatherBot;
 
-    public TelegramFacade(UserService userService, WeatherFacade weatherFacade) {
+
+    public TelegramFacade(UserService userService, WeatherFacade weatherFacade, WeatherBot weatherBot) {
         this.userService = userService;
         this.weatherFacade = weatherFacade;
+        this.weatherBot = weatherBot;
     }
 
     public BotApiMethod<?> handleUpdate(Update update) {
         SendMessage messageToUser = new SendMessage();
         if (update.hasMessage()) {
+            Long chatId = update.getMessage().getChatId();
             if (update.getMessage().hasText()) {
                 String text = update.getMessage().getText();
                 if (text.equalsIgnoreCase("/start")) {
@@ -52,12 +54,19 @@ public class TelegramFacade {
                     } else {
                         messageToUser = sendKeyBoardWithLocationInputChoice(update.getMessage().getChatId());
                     }
-                } else if (text.equalsIgnoreCase("/help")) {
-                    messageToUser.setText("This bot allows you to get weather forecast for today or tomorrow.\nTo continue send /start.");
                 } else if (waitingForCity) {
                     userService.createUser(update);
                     waitingForCity = false;
                     messageToUser = sendButtonsForChoosingDay(update.getMessage().getChatId());
+                } else if (text.equalsIgnoreCase("/help")) {
+                    messageToUser.setText("This bot allows you to get weather forecast for today or tomorrow.\nTo continue send /start.");
+                } else if (text.equalsIgnoreCase("/cancel")) {
+                    boolean result = userService.findSubscriberAndDeleteByChatId(update.getMessage().getChatId());
+                    if (result) {
+                        return new SendMessage().setText("Your subscription were canceled.\nTo continue send /start").setChatId(chatId);
+                    } else {
+                        return new SendMessage().setText("To continue send /start").setChatId(chatId);
+                    }
                 }
             }
             if (!update.getMessage().hasText() && update.getMessage().hasLocation()) {
@@ -71,7 +80,7 @@ public class TelegramFacade {
                 } else {
                     userService.createUser(update);
                 }
-                messageToUser = sendButtonsForChoosingDay(update.getMessage().getChatId());
+                messageToUser = sendButtonsForChoosingDay(chatId);
             }
         }
         if (update.hasCallbackQuery()) {
@@ -119,32 +128,53 @@ public class TelegramFacade {
         KeyboardRow keyboardRow = new KeyboardRow();
         keyboardRow.add(new KeyboardButton()
                 .setRequestLocation(true)
-                .setText("Send location"));
+                .setText("Send geolocation"));
         List<KeyboardRow> rows = new ArrayList<>(Collections.singletonList(keyboardRow));
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup().setKeyboard(rows).setOneTimeKeyboard(true).setResizeKeyboard(true);
-        return new SendMessage().setChatId(chatId).setReplyMarkup(markup).setText("For sending location click 'Send location'");
+        return new SendMessage().setChatId(chatId).setReplyMarkup(markup).setText("For sending geolocation click 'Send location'");
     }
 
     public SendMessage processCallBackQuery(CallbackQuery query) {
         String data = query.getData();
         Long chatId = query.getMessage().getChatId();
         switch (data) {
-            case "location":
+            case "location": {
                 return sendForRequestLocation(chatId);
-            case "city":
+            }
+            case "city": {
                 waitingForCity = true;
                 return new SendMessage().setChatId(chatId).setText("Insert city");
-            case "previous":
+            }
+            case "previous": {
                 return sendButtonsForChoosingDay(chatId);
-            case "new":
+            }
+            case "new": {
                 return sendKeyBoardWithLocationInputChoice(chatId);
+            }
+            case "Yes": {
+                User userByChatId = userService.findUserByChatId(chatId);
+                userService.saveSubscriber(userByChatId);
+                return new SendMessage().setChatId(chatId).setText("Thanks for subscription! " +
+                        "You will get weather forecast every morning at 8:05." +
+                        "\nTo refuse send /cancel" +
+                        "\nFor getting weather send /start");
+            }
+            case "no": {
+                return new SendMessage().setChatId(chatId).setText("For getting weather send /start");
+            }
+
             default:
                 User user = userService.findUserByChatId(chatId);
                 try {
                     Weather requestToOpenWeather = weatherFacade.createRequestToThreeServices(data, user);
                     setLocationOrCityIfNotExists(requestToOpenWeather, user);
-                    return new SendMessage().setText(requestToOpenWeather.toString()).setChatId(user.getChatId());
-                } catch(HttpClientErrorException e) {
+                    if (Objects.nonNull(userService.findSubscriberById(user.getChatId()))){
+                        return new SendMessage().setText(requestToOpenWeather.toString() + "\nTo continue send /start").setChatId(user.getChatId());
+                    } else {
+                        return new SendMessage().setText(requestToOpenWeather.toString() + "\n\nWould you like to get weather forecast every morning by subscription?")
+                                .setChatId(user.getChatId()).setReplyMarkup(offerSubscription());
+                    }
+                } catch (HttpClientErrorException e) {
                     waitingForCity = true;
                     return new SendMessage().setText("Incorrect city name. Please try again").setChatId(chatId);
                 }
@@ -154,8 +184,8 @@ public class TelegramFacade {
 
     public SendMessage sendLocationQuestion() {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        InlineKeyboardButton previous = new InlineKeyboardButton("Use previous location").setCallbackData("previous");
-        InlineKeyboardButton newLocation = new InlineKeyboardButton("Send new location").setCallbackData("new");
+        InlineKeyboardButton previous = new InlineKeyboardButton("Use previous geolocation").setCallbackData("previous");
+        InlineKeyboardButton newLocation = new InlineKeyboardButton("Send new geolocation").setCallbackData("new");
         List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
         keyboardRow.add(newLocation);
         keyboardRow.add(previous);
@@ -175,6 +205,42 @@ public class TelegramFacade {
 
     }
 
+    //@Scheduled(cron = "0 5 8/24 * *")
+    // @Scheduled(fixedRate = 300000)
+    //Ежедневно в 8 утра
+    private void sendCurrentWeatherToSubscribers() {
+        List<User> subscribers = userService.findSubscribers();
+        Map<String, Weather> weather = new HashMap<>();
+        SendMessage weatherForUser = new SendMessage();
+        if (Objects.nonNull(subscribers)) {
+            for (User user : subscribers) {
+                try {
+                    if (weather.containsKey(user.getCity())) {
+                        weatherBot.executeMethod(weatherForUser.setChatId(user.getChatId()).setText(weather.get(user.getCity()).toString()));
+                    } else {
+                        Weather todayWeather = weatherFacade.createRequestToThreeServices("today", user);
+                        weather.put(todayWeather.getCityName(), todayWeather);
+                        weatherBot.executeMethod(weatherForUser.setChatId(user.getChatId()).setText(todayWeather.toString()));
+                    }
+                } catch (HttpClientErrorException e) {
+                    weatherBot.executeMethod(new SendMessage().setChatId(user.getChatId()).setText("Incorrect city name"));
+                }
+            }
+        }
+    }
+
+    public InlineKeyboardMarkup offerSubscription() {
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        InlineKeyboardButton yes = new InlineKeyboardButton("Yes").setCallbackData("Yes");
+        InlineKeyboardButton no = new InlineKeyboardButton(" I haven't decided yet").setCallbackData("No");
+        List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
+        keyboardRow.add(yes);
+        keyboardRow.add(no);
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardRow);
+        keyboardMarkup.setKeyboard(rowList);
+        return keyboardMarkup;
+    }
 
 }
 

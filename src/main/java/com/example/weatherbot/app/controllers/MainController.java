@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @RestController
 public class MainController {
@@ -22,12 +21,7 @@ public class MainController {
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public void getUpdates(@RequestBody Update update) {
-        try {
-            weatherBot.execute(facade.handleUpdate(update));
-        } catch (TelegramApiException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+            weatherBot.executeMethod(facade.handleUpdate(update));
     }
 }
 

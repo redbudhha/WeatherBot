@@ -61,11 +61,11 @@ public class BotConfig {
 
     @Bean
     public MongoClient mongoClient() throws UnknownHostException {
-        return MongoClients.create();
+        return MongoClients.create("mongodb+srv://DmitryKrasovsky:0987654321ytrewq@cluster1.wo9pb.mongodb.net/weatherForecast?retryWrites=true&w=majority");
     }
     @Bean
     public MongoTemplate mongoTemplate() throws UnknownHostException {
-        return new MongoTemplate(mongoClient(), "db_users");
+        return new MongoTemplate(mongoClient(),"weatherForecast");
     }
 
 

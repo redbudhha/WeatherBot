@@ -1,6 +1,7 @@
 package com.example.weatherbot.app.service;
 
 import com.example.weatherbot.app.model.db_model.User;
+import com.mongodb.client.result.DeleteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,12 @@ public class UserService {
         String userName = update.getMessage().getFrom().getUserName();
         if (update.getMessage().hasLocation()) {
             Location location = update.getMessage().getLocation();
-            Float lat =  Float.parseFloat(String.format("%.2f", location.getLatitude()).replace(",", "."));
+            Float lat = Float.parseFloat(String.format("%.2f", location.getLatitude()).replace(",", "."));
             Float lon = Float.parseFloat(String.format("%.2f", location.getLongitude()).replace(",", "."));
-            User.Location loc = new User.Location(lat,lon);
+            User.Location loc = new User.Location(lat, lon);
             user = new User(userName, loc, chatId);
         } else {
-            String city = update.getMessage().getText().toLowerCase().replaceAll("-"," ").trim();
+            String city = update.getMessage().getText().toLowerCase().replaceAll("-", " ").trim();
             user = new User(userName, city, chatId);
         }
         mongoTemplate.save(user, "user");
@@ -45,6 +46,23 @@ public class UserService {
 
     public void update(User user) {
         mongoTemplate.save(user, "user");
+    }
+
+    public List<User> findSubscribers() {
+        return mongoTemplate.findAll(User.class, "subscribers");
+    }
+
+    public User saveSubscriber(User user) {
+        return mongoTemplate.save(user, "subscribers");
+    }
+
+    public boolean findSubscriberAndDeleteByChatId(Long chatId) {
+        User user = findSubscriberById(chatId);
+        DeleteResult remove = mongoTemplate.remove(user, "subscribers");
+        return remove.wasAcknowledged();
+    }
+    public User findSubscriberById(Long chatId) {
+       return mongoTemplate.findById(chatId,User.class,"subscribers");
     }
 
 

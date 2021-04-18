@@ -7,13 +7,12 @@ import com.example.weatherbot.app.model.weather_model.WeatherApiModel;
 import com.example.weatherbot.app.model.weather_model.WeatherBitModel;
 import com.example.weatherbot.app.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,8 +23,9 @@ public class WeatherFacade {
     private final WeatherService weatherService;
     private final UserService userService;
 
+
     @Autowired
-    public WeatherFacade(OpenWeatherService openWeatherService, WeatherApiService weatherApiService, WeatherBitService weatherBitService, WeatherService weatherService,UserService userService) {
+    public WeatherFacade(OpenWeatherService openWeatherService, WeatherApiService weatherApiService, WeatherBitService weatherBitService, WeatherService weatherService, UserService userService) {
         this.openWeatherService = openWeatherService;
         this.weatherApiService = weatherApiService;
         this.weatherBitService = weatherBitService;
@@ -34,32 +34,36 @@ public class WeatherFacade {
     }
 
     public Weather createRequestToThreeServices(String data, User user) {
-        Weather weather = null;
-        LocalDate date = null;
-        if (data.equals("today")) {
-            date = LocalDate.now();
-        } else {
-            date = LocalDate.now().plusDays(1);
-        }
-         weather = weatherService.checkIfWeatherAlreadyExists(date, user);
-        if (Objects.isNull(weather)) {
-            if (Objects.isNull(user.getLocation())) {
-                if (data.equals("today")) {
-                    weather = createRequestForCurrentWeatherByCity(user.getCity());
-                } else if (data.equals("tomorrow")) {
-                    weather = createForecastRequestByCity(user.getCity());
-                }
+        try {
+            Weather weather = null;
+            LocalDate date = null;
+            if (data.equals("today")) {
+                date = LocalDate.now();
             } else {
-                Float lat = user.getLocation().getLat();
-                Float lon = user.getLocation().getLon();
-                if (data.equals("today")) {
-                    weather = createRequestForCurrentWeatherByLocation(lat, lon);
-                } else if (data.equals("tomorrow")) {
-                    weather = createForecastRequestByLocation(lat, lon);
+                date = LocalDate.now().plusDays(1);
+            }
+            weather = weatherService.checkIfWeatherAlreadyExists(date, user);
+            if (Objects.isNull(weather)) {
+                if (Objects.isNull(user.getLocation())) {
+                    if (data.equals("today")) {
+                        weather = createRequestForCurrentWeatherByCity(user.getCity());
+                    } else if (data.equals("tomorrow")) {
+                        weather = createForecastRequestByCity(user.getCity());
+                    }
+                } else {
+                    Float lat = user.getLocation().getLat();
+                    Float lon = user.getLocation().getLon();
+                    if (data.equals("today")) {
+                        weather = createRequestForCurrentWeatherByLocation(lat, lon);
+                    } else if (data.equals("tomorrow")) {
+                        weather = createForecastRequestByLocation(lat, lon);
+                    }
                 }
             }
+            return weather;
+        } catch (HttpClientErrorException e) {
+            throw e;
         }
-        return weather;
     }
 
     private Weather createForecastRequestByLocation(Float lat, Float lon) {
@@ -98,22 +102,30 @@ public class WeatherFacade {
         Integer humidity = (weatherAPIModel.getHumidity() + openWeatherModel.getHumidity() + weatherBitModel.getHumidity()) / 3;
         Double feelsLike = (weatherAPIModel.getFeelsLike() + openWeatherModel.getFeelsLike() + weatherBitModel.getFeelsLike()) / 3.0;
         Double speed = (weatherAPIModel.getWindSpeed() + openWeatherModel.getWindSpeed() + weatherBitModel.getWindSpeed()) / 3.0;
-        Float lat = Float.parseFloat(String.format("%.2f",weatherAPIModel.getLat()).replace(",","."));
-        Float lon = Float.parseFloat(String.format("%.2f",weatherAPIModel.getLon()).replace(",","."));
+        Float lat = Float.parseFloat(String.format("%.2f", weatherAPIModel.getLat()).replace(",", "."));
+        Float lon = Float.parseFloat(String.format("%.2f", weatherAPIModel.getLon()).replace(",", "."));
         String condition = openWeatherModel.getCondition();
         LocalDate date = weatherBitModel.getDateTime().toLocalDate();
         Weather weather = new Weather(cityName, temp, pressure, humidity, speed, feelsLike, condition, lat, lon, date);
-        weatherService.save(weather);
+        if (Objects.equals(date, LocalDate.now())){
+            weather.setCurrent(true);
+            weatherService.findAndReplace(weather);
+        }
+        else {
+            weatherService.save(weather);
+        }
         return weather;
     }
-    //@Scheduled(cron = "0 9/12 * *")
-    @Scheduled(fixedRate = 900000)
-    private void createDailyRequestToWeatherApi(){
-        List<User> users = userService.findAll();
-        if (!users.isEmpty()) {
-            Set<String> cities = users.stream().map(User::getCity).collect(Collectors.toSet());
+
+    //@Scheduled(fixedRate = 43200000)
+    //Ежедневно в 8 и 20
+    private void createDailyRequestToWeatherApi() {
+        List<Weather> weather = weatherService.findAll();
+        if (!weather.isEmpty()) {
+            Set<String> cities = weather.stream().map(Weather::getCityName).collect(Collectors.toSet());
             List<Weather> current = cities.parallelStream()
                     .map(this::createRequestForCurrentWeatherByCity)
+                    .peek(weatherService::findAndReplace)
                     .collect(Collectors.toList());
             List<Weather> forecast = cities.parallelStream()
                     .map(this::createForecastRequestByCity)
@@ -121,7 +133,25 @@ public class WeatherFacade {
         }
 
     }
-
-
+    //@Scheduled(cron = "0 0 9/24 * *")
+    private void compareYesterdayForecastToCurrentWeather(){
+        List<Weather> weatherList = weatherService.findAll();
+        if (Objects.nonNull(weatherList)){
+            Map<String, Weather> yesterday = weatherList.stream()
+                    .filter(weather -> !weather.isCurrent() && weather.getDate().equals(LocalDate.now()))
+                    .collect(Collectors.toMap(Weather::getCityName, Function.identity(), (existing, replacement) -> replacement));
+            Map<String, Weather> current = weatherList.stream()
+                    .filter(weather -> weather.isCurrent() && weather.getDate().equals(LocalDate.now()))
+                    .collect(Collectors.toMap(Weather::getCityName, Function.identity(), (existing, replacement) -> replacement));
+            Map<String,Boolean> matching = new HashMap<>();
+            List<Boolean> checking = yesterday.entrySet().stream().map(forecast -> {
+                if (current.containsKey(forecast.getKey())) {
+                    boolean match = forecast.getValue().equals(current.get(forecast.getKey()));
+                    matching.put(forecast.getKey(),match);
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
+    }
 
 }

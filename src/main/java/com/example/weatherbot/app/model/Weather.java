@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -25,7 +24,7 @@ public class Weather {
     private Float lat;
     private Float lon;
     private LocalDate date;
-    private LocalTime time;
+    private boolean current;
 
     public Weather(String cityName, Double temp, Integer pressure, Integer humidity, Double speed, Double feelsLike, String condition, Float lat, Float lon, LocalDate date) {
         this.cityName = cityName;
@@ -38,7 +37,6 @@ public class Weather {
         this.lat = lat;
         this.lon = lon;
         this.date = date;
-        this.time = LocalTime.now();
     }
 
     @Override
@@ -50,6 +48,8 @@ public class Weather {
                 "\nHumidity = " + this.humidity + "%" +
                 "\nWind speed = " + new DecimalFormat("0").format(this.speed) + " m\\s" +
                 "\nFeels like = " + new DecimalFormat("0").format(this.feelsLike) + "°C" +
-                "\nCondition = " + this.condition;
+                "\nCondition = " + this.condition +
+                "\n" + this.date;
+
     }
 }
