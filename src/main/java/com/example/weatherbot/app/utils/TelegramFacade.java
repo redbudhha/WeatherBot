@@ -77,9 +77,11 @@ public class TelegramFacade {
         if (update.hasCallbackQuery()) {
             return processCallBackQuery(update.getCallbackQuery());
         }
+
         // если ни одно условие не подошло
         if (messageToUser.getText() == null) {
-            messageToUser.setText("This command isn't supported.");
+            messageToUser.setText("This command isn't supported. " +
+                    "If you want to find out the current weather or forecast, please, type the command /start");
 
         }
         return messageToUser.setChatId(update.getMessage().getChatId());
@@ -87,7 +89,7 @@ public class TelegramFacade {
 
     public SendMessage sendKeyBoardWithLocationInputChoice(long chatId) {
         InlineKeyboardButton location = new InlineKeyboardButton()
-                .setText("Send location")
+                .setText("Send geolocation")
                 .setCallbackData("location");
         InlineKeyboardButton city = new InlineKeyboardButton()
                 .setText("Send city name")
@@ -105,24 +107,25 @@ public class TelegramFacade {
     public SendMessage sendButtonsForChoosingDay(long chatId) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         InlineKeyboardButton currentWeatherButton = new InlineKeyboardButton("Current weather").setCallbackData("today");
-        InlineKeyboardButton tomorrow = new InlineKeyboardButton("Tomorrow weather").setCallbackData("tomorrow");
+        InlineKeyboardButton tomorrow = new InlineKeyboardButton("Tomorrow weather forecast").setCallbackData("tomorrow");
         List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
         keyboardRow.add(currentWeatherButton);
         keyboardRow.add(tomorrow);
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardRow);
         keyboardMarkup.setKeyboard(rowList);
-        return new SendMessage().setReplyMarkup(keyboardMarkup).setText("What day would you like to get the weather forecast?").setChatId(chatId);
+        return new SendMessage().setReplyMarkup(keyboardMarkup).setText("What day would you like " +
+                "to get the weather forecast?").setChatId(chatId);
     }
 
     public SendMessage sendForRequestLocation(long chatId) {
         KeyboardRow keyboardRow = new KeyboardRow();
         keyboardRow.add(new KeyboardButton()
                 .setRequestLocation(true)
-                .setText("Send location"));
+                .setText("Send geolocation"));
         List<KeyboardRow> rows = new ArrayList<>(Collections.singletonList(keyboardRow));
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup().setKeyboard(rows).setOneTimeKeyboard(true).setResizeKeyboard(true);
-        return new SendMessage().setChatId(chatId).setReplyMarkup(markup).setText("For sending location click 'Send location'");
+        return new SendMessage().setChatId(chatId).setReplyMarkup(markup).setText("For sending location click 'Send geolocation'");
     }
 
     public SendMessage processCallBackQuery(CallbackQuery query) {
@@ -144,7 +147,7 @@ public class TelegramFacade {
                     Weather requestToOpenWeather = weatherFacade.createRequestToThreeServices(data, user);
                     setLocationOrCityIfNotExists(requestToOpenWeather, user);
                     return new SendMessage().setText(requestToOpenWeather.toString()).setChatId(user.getChatId());
-                } catch(HttpClientErrorException e) {
+                } catch (HttpClientErrorException e) {
                     waitingForCity = true;
                     return new SendMessage().setText("Incorrect city name. Please try again").setChatId(chatId);
                 }
@@ -174,7 +177,6 @@ public class TelegramFacade {
         userService.update(user);
 
     }
-
 
 }
 

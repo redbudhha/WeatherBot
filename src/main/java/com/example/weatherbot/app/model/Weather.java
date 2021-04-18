@@ -43,7 +43,8 @@ public class Weather {
 
     @Override
     public String toString() {
-        return " City name: " + this.cityName +
+        return " Date: " + this.date +
+                "\nCity name: " + this.cityName +
                 "\n" +
                 "\nTemperature = " + new DecimalFormat("0").format(this.temp) + "°C" +
                 "\nFeels like = " + new DecimalFormat("0").format(this.feelsLike) + "°C" +

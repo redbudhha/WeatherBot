@@ -16,6 +16,7 @@ public class OpenWeatherService {
     private final String apiTokenOpenWeather = "36daa3f6889a39abb62113bafa51611b";
     private final String openWeatherCurrentURL = "http://api.openweathermap.org/data/2.5/weather?&units=metric&";
     private final String openWeatherForecastURL = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&";
+    private final String unitsAndCnt = "&units=metric&cnt=16";
     private final RestTemplate restTemplate;
 
 
@@ -25,7 +26,7 @@ public class OpenWeatherService {
     }
 
     public OpenWeatherModel getCurrentByCity(String cityName) {
-        String url = openWeatherCurrentURL + "q=" + cityName + ",RU&appid=" + apiTokenOpenWeather;
+        String url = openWeatherCurrentURL + "q=" + cityName + "&appid=" + apiTokenOpenWeather;
         System.out.println(cityName);
         return getCurrentOpenWeatherModel(url);
     }
@@ -39,7 +40,7 @@ public class OpenWeatherService {
 
 
     public OpenWeatherModel getForecastWeatherFromOWByCity(String cityName) {
-        String url = openWeatherForecastURL + "q=" + cityName + ",RU&units=metric&cnt=16" + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherForecastURL + "q=" + cityName + unitsAndCnt + "&appid=" + apiTokenOpenWeather;
         return getOpenWeatherModel(url);
     }
 
@@ -53,16 +54,16 @@ public class OpenWeatherService {
         OpenWeatherForecastDto dto = restTemplate.getForObject(url, OpenWeatherForecastDto.class);
         if (Objects.nonNull(dto)) {
             return new OpenWeatherModel(dto.getCity().getName(),
-                    dto.getHourlyArray().get(0).getMainMetrics().getTemp(),
-                    dto.getHourlyArray().get(0).getMainMetrics().getPressure(),
-                    dto.getHourlyArray().get(0).getMainMetrics().getHumidity(),
-                    dto.getHourlyArray().get(0).getMainMetrics().getFeelsLike(),
-                    dto.getHourlyArray().get(0).getWeather().get(0).getCondition(),
+                    dto.getHourlyArray().get(2).getMainMetrics().getTemp(),
+                    dto.getHourlyArray().get(2).getMainMetrics().getPressure(),
+                    dto.getHourlyArray().get(2).getMainMetrics().getHumidity(),
+                    dto.getHourlyArray().get(2).getMainMetrics().getFeelsLike(),
+                    dto.getHourlyArray().get(2).getWeather().get(0).getCondition(),
                     dto.getCity().getCoords().getLat(),
                     dto.getCity().getCoords().getLon(),
-                    dto.getHourlyArray().get(0).getWind().getSpeed(),
-                    dto.getHourlyArray().get(0).getWind().getDeg(),
-                    dto.getHourlyArray().get(0).getDateTime());
+                    dto.getHourlyArray().get(2).getWind().getSpeed(),
+                    dto.getHourlyArray().get(2).getWind().getDeg(),
+                    dto.getHourlyArray().get(2).getDateTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
         }

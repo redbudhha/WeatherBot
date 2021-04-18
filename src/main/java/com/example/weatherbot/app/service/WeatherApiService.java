@@ -52,15 +52,15 @@ public class WeatherApiService {
         WeatherAPIForecastDto dto = restTemplate.getForObject(url, WeatherAPIForecastDto.class);
         if (Objects.nonNull(dto)) {
             return new WeatherApiModel(dto.getLocation().getCityName(),
-                    dto.getForecast().getForecasts().get(0).getWeatherInfo().getAvgTemp(),
-                    dto.getForecast().getForecasts().get(0).getHourForecast().get(0).getPressure(),
-                    dto.getForecast().getForecasts().get(0).getWeatherInfo().getAvgHumidity(),
-                    dto.getForecast().getForecasts().get(0).getHourForecast().get(0).getFeelsLike(),
-                    dto.getForecast().getForecasts().get(0).getWeatherInfo().getCondition().getDescription(),
+                    dto.getForecast().getForecasts().get(1).getWeatherInfo().getAvgTemp(),
+                    dto.getForecast().getForecasts().get(1).getHourForecast().get(1).getPressure(),
+                    dto.getForecast().getForecasts().get(1).getWeatherInfo().getAvgHumidity(),
+                    dto.getForecast().getForecasts().get(1).getHourForecast().get(1).getFeelsLike(),
+                    dto.getForecast().getForecasts().get(1).getWeatherInfo().getCondition().getDescription(),
                     dto.getLocation().getLat(),
                     dto.getLocation().getLon(),
-                    dto.getForecast().getForecasts().get(0).getWeatherInfo().getWindSpeed(),
-                    dto.getForecast().getForecasts().get(0).getHourForecast().get(0).getWindDeg(),
+                    dto.getForecast().getForecasts().get(1).getWeatherInfo().getWindSpeed(),
+                    dto.getForecast().getForecasts().get(1).getHourForecast().get(1).getWindDeg(),
                     dto.getLocation().getLocalTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");

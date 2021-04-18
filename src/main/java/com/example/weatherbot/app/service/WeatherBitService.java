@@ -25,25 +25,25 @@ public class WeatherBitService {
     }
 
     public WeatherBitModel getCurrentWeatherFromWBByCity(String cityName) {
-        String url = weatherBitCurrentURL + "city=" + cityName + "&country=RU" + "&key=" + apiTokenWeatherBit;
+        String url = weatherBitCurrentURL + "city=" + cityName + "&key=" + apiTokenWeatherBit;
         return getCurrentWeatherBitModel(url);
     }
 
 
     public WeatherBitModel getCurrentWeatherFromWBByLocation(Float lat, float lon) {
-        String url = weatherBitCurrentURL + "lat=" + lat + "&lon=" + lon + "&country=RU" + "&key=" + apiTokenWeatherBit;
+        String url = weatherBitCurrentURL + "lat=" + lat + "&lon=" + lon + "&key=" + apiTokenWeatherBit;
         return getCurrentWeatherBitModel(url);
     }
 
 
     public WeatherBitModel getForecastWeatherFromWBByLocation(Float lat, float lon) {
-        String url = weatherBitForecastURL + "&lat=" + lat + "&lon=" + lon + "&country=RU" + "&key=" + apiTokenWeatherBit;
+        String url = weatherBitForecastURL + "&lat=" + lat + "&lon=" + lon + "&key=" + apiTokenWeatherBit;
         return getWeatherBitModel(url);
     }
 
 
     public WeatherBitModel getForecastWeatherFromWBByCity(String cityName) {
-        String url = weatherBitForecastURL + "city=" + cityName + "&country=RU" + "&key=" + apiTokenWeatherBit;
+        String url = weatherBitForecastURL + "city=" + cityName + "&key=" + apiTokenWeatherBit;
         return getWeatherBitModel(url);
     }
 
@@ -71,16 +71,16 @@ public class WeatherBitService {
         WeatherBitForecastDto dto = restTemplate.getForObject(url, WeatherBitForecastDto.class);
         if (Objects.nonNull(dto)) {
             return new WeatherBitModel(dto.getCityName(),
-                    dto.getMainInfoForecast().get(0).getTemp(),
-                    dto.getMainInfoForecast().get(0).getPressure(),
-                    dto.getMainInfoForecast().get(0).getHumidity(),
-                    dto.getMainInfoForecast().get(0).getFeelsLike(),
-                    dto.getMainInfoForecast().get(0).getDesc().getDescription(),
+                    dto.getMainInfoForecast().get(2).getTemp(),
+                    dto.getMainInfoForecast().get(2).getPressure(),
+                    dto.getMainInfoForecast().get(2).getHumidity(),
+                    dto.getMainInfoForecast().get(2).getFeelsLike(),
+                    dto.getMainInfoForecast().get(2).getDesc().getDescription(),
                     dto.getLat(),
                     dto.getLon(),
-                    dto.getMainInfoForecast().get(0).getWindSpeed(),
-                    dto.getMainInfoForecast().get(0).getWindDeg(),
-                    dto.getMainInfoForecast().get(0).getDateTime());
+                    dto.getMainInfoForecast().get(2).getWindSpeed(),
+                    dto.getMainInfoForecast().get(2).getWindDeg(),
+                    dto.getMainInfoForecast().get(2).getDateTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
         }
