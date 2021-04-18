@@ -13,8 +13,10 @@ import java.util.Objects;
 
 @Service
 public class OpenWeatherService {
-    private final RestTemplate restTemplate;
     private final String apiTokenOpenWeather = "36daa3f6889a39abb62113bafa51611b";
+    private final String openWeatherCurrentURL = "http://api.openweathermap.org/data/2.5/weather?&units=metric&";
+    private final String openWeatherForecastURL = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&";
+    private final RestTemplate restTemplate;
 
 
     @Autowired
@@ -23,36 +25,27 @@ public class OpenWeatherService {
     }
 
     public OpenWeatherModel getCurrentByCity(String cityName) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&q=" + cityName + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherCurrentURL + "q=" + cityName + ",RU&appid=" + apiTokenOpenWeather;
         System.out.println(cityName);
         return getCurrentOpenWeatherModel(url);
     }
 
-    /*
-    current weather by location name from service "Open Weather"
-     */
+
     public OpenWeatherModel getCurrentWeatherFromOWByLocation(Float lat, Float lon) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&lat=" + lat + "&lon=" + lon
-                + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherCurrentURL + "lat=" + lat + "&lon=" + lon + "&appid=" + apiTokenOpenWeather;
         return getCurrentOpenWeatherModel(url);
 
     }
 
-    /*
-    forecast weather for the next day from by city name service "Open Weather"
-     */
+
     public OpenWeatherModel getForecastWeatherFromOWByCity(String cityName) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&q=" + cityName + "&units=metric&cnt=16"
-                + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherForecastURL + "q=" + cityName + ",RU&units=metric&cnt=16" + "&appid=" + apiTokenOpenWeather;
         return getOpenWeatherModel(url);
     }
 
-    /*
-    forecast weather for the next day from by location service "Open Weather"
-     */
+
     public OpenWeatherModel getForecastWeatherFromOWByLocation(Float lat, Float lon) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&lat=" + lat + "&lon=" + lon + "&cnt=16"
-                + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherForecastURL + "lat=" + lat + "&lon=" + lon + "&cnt=16" + "&appid=" + apiTokenOpenWeather;
         return getOpenWeatherModel(url);
     }
 
@@ -74,6 +67,7 @@ public class OpenWeatherService {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
         }
     }
+
     private OpenWeatherModel getCurrentOpenWeatherModel(String url) {
         OpenWeatherCurrentDto dto = restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
         if (Objects.nonNull(dto)) {

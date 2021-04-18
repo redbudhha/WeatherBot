@@ -34,39 +34,4 @@ public class WeatherMetrics {
     @JsonProperty("temp_kf")
     private Double tempKf;
 
-    public Double getTemp() {
-        return temp;
-    }
-
-    public Double getFeelsLike() {
-        return feelsLike;
-    }
-
-    public Double getTempMin() {
-        return tempMin;
-    }
-
-    public Double getTempMax() {
-        return tempMax;
-    }
-
-    public Integer getPressure() {
-        return pressure;
-    }
-
-    public Integer getSeaLevel() {
-        return seaLevel;
-    }
-
-    public Integer getGroundLevel() {
-        return groundLevel;
-    }
-
-    public Integer getHumidity() {
-        return humidity;
-    }
-
-    public Double getTempKf() {
-        return tempKf;
-    }
 }

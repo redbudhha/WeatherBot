@@ -14,6 +14,8 @@ import java.util.Objects;
 @Service
 public class WeatherApiService {
     private final String apiTokenWeatherAPI = "c34f9733545b4663ae9181840210604";
+    private final String weatherApiCurrentURL = "https://api.weatherapi.com/v1/current.json?key=";
+    private final String weatherApiForecastURL = "https://api.weatherapi.com/v1/forecast.json?key=";
     private final RestTemplate restTemplate;
 
     @Autowired
@@ -21,38 +23,27 @@ public class WeatherApiService {
         this.restTemplate = restTemplate;
     }
 
-    /*
-    current weather by city name from service "Weather API"
-     */
+
     public WeatherApiModel getCurrentWeatherFromWAByCity(String cityName) {
-        String url = "https://api.weatherapi.com/v1/current.json?key="
-                + apiTokenWeatherAPI + "&q=" + cityName + "&aqi=no";
+        String url = weatherApiCurrentURL + apiTokenWeatherAPI + "&q=" + cityName + "&aqi=no";
         return getCurrentWeatherApiModel(url);
     }
-    /*
-  current weather by location name from service "Weather API"
-   */
+
+
     public WeatherApiModel getCurrentWeatherFromWAByLocation(Float lat, float lon) {
-        String url = "https://api.weatherapi.com/v1/current.json?key="
-                + apiTokenWeatherAPI + "&q=" + lat + "," + lon + "&aqi=no";
+        String url = weatherApiCurrentURL + apiTokenWeatherAPI + "&q=" + lat + "," + lon + "&aqi=no";
         return getCurrentWeatherApiModel(url);
     }
 
 
-    /*
-  forecast weather by city name from service "Weather API"
-  */
     public WeatherApiModel getForecastWeatherFromWAByCity(String cityName) {
-        String url = "https://api.weatherapi.com/v1/forecast.json?key=" + apiTokenWeatherAPI
-                + "&q=" + cityName + "&days=2&aqi=no&alerts=no";
+        String url = weatherApiForecastURL + apiTokenWeatherAPI + "&q=" + cityName + "&days=2&aqi=no&alerts=no";
         return getWeatherApiModel(url);
     }
 
-    /*
- forecast weather by location from service "Weather API"
-  */
+
     public WeatherApiModel getForecastWeatherFromWAByLocation(Float lat, float lon) {
-        String url = "https://api.weatherapi.com/v1/forecast.json?key=" + apiTokenWeatherAPI
+        String url = weatherApiForecastURL + apiTokenWeatherAPI
                 + "&q=" + lat + "," + lon + "&days=2&aqi=no&alerts=no";
         return getWeatherApiModel(url);
     }
@@ -75,6 +66,7 @@ public class WeatherApiService {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
         }
     }
+
     private WeatherApiModel getCurrentWeatherApiModel(String url) {
         WeatherAPICurrentDto dto = restTemplate.getForObject(url, WeatherAPICurrentDto.class);
         if (Objects.nonNull(dto)) {

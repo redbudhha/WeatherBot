@@ -23,12 +23,12 @@ public class UserService {
         String userName = update.getMessage().getFrom().getUserName();
         if (update.getMessage().hasLocation()) {
             Location location = update.getMessage().getLocation();
-            Float lat =  Float.parseFloat(String.format("%.2f", location.getLatitude()).replace(",", "."));
-            Float lon = Float.parseFloat(String.format("%.2f", location.getLongitude()).replace(",", "."));
-            User.Location loc = new User.Location(lat,lon);
+            Float lat = location.getLatitude();
+            Float lon = location.getLongitude();
+            User.Location loc = new User.Location(lat, lon);
             user = new User(userName, loc, chatId);
         } else {
-            String city = update.getMessage().getText().toLowerCase().replaceAll("-"," ").trim();
+            String city = update.getMessage().getText().toLowerCase().replaceAll("-", " ").trim();
             user = new User(userName, city, chatId);
         }
         mongoTemplate.save(user, "user");
