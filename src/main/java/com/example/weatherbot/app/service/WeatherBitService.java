@@ -15,27 +15,36 @@ import java.util.Objects;
 public class WeatherBitService {
     private final RestTemplate restTemplate;
     private final String apiTokenWeatherBit = "5bf862115d4d44f6a4112743d9dafa61";
+    private final String weatherBitCurrentURL = "https://api.weatherbit.io/v2.0/current?";
+    private final String weatherBitForecastURL = "https://api.weatherbit.io/v2.0/forecast/daily?";
 
 
     @Autowired
     public WeatherBitService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
-    /*
-    current weather by city name from service "Weather bit"
-     */
+
     public WeatherBitModel getCurrentWeatherFromWBByCity(String cityName) {
-        String url = "https://api.weatherbit.io/v2.0/current?city=" + cityName
-                + "&key=" + apiTokenWeatherBit;
+        String url = weatherBitCurrentURL + "city=" + cityName + "&key=" + apiTokenWeatherBit;
         return getCurrentWeatherBitModel(url);
     }
-    /*
-        current weather by location name from service "Weather bit"
-         */
+
+
     public WeatherBitModel getCurrentWeatherFromWBByLocation(Float lat, float lon) {
-        String url = "https://api.weatherbit.io/v2.0/current?lat=" + lat + "&lon=" + lon
-                + "&key=" + apiTokenWeatherBit;
+        String url = weatherBitCurrentURL + "lat=" + lat + "&lon=" + lon + "&key=" + apiTokenWeatherBit;
         return getCurrentWeatherBitModel(url);
+    }
+
+
+    public WeatherBitModel getForecastWeatherFromWBByLocation(Float lat, float lon) {
+        String url = weatherBitForecastURL + "&lat=" + lat + "&lon=" + lon + "&key=" + apiTokenWeatherBit;
+        return getWeatherBitModel(url);
+    }
+
+
+    public WeatherBitModel getForecastWeatherFromWBByCity(String cityName) {
+        String url = weatherBitForecastURL + "city=" + cityName + "&key=" + apiTokenWeatherBit;
+        return getWeatherBitModel(url);
     }
 
     private WeatherBitModel getCurrentWeatherBitModel(String url) {
@@ -56,41 +65,24 @@ public class WeatherBitService {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
         }
     }
-    /*
-   forecast weather by city name from service "Weather bit"
-    */
-    public WeatherBitModel getForecastWeatherFromWBByCity(String cityName) {
-        String url = "https://api.weatherbit.io/v2.0/forecast/daily?city=" + cityName
-                + "&key=" + apiTokenWeatherBit;
-        return getWeatherBitModel(url);
-    }
+
 
     private WeatherBitModel getWeatherBitModel(String url) {
         WeatherBitForecastDto dto = restTemplate.getForObject(url, WeatherBitForecastDto.class);
         if (Objects.nonNull(dto)) {
             return new WeatherBitModel(dto.getCityName(),
-                    dto.getMainInfoForecast().get(0).getTemp(),
-                    dto.getMainInfoForecast().get(0).getPressure(),
-                    dto.getMainInfoForecast().get(0).getHumidity(),
-                    dto.getMainInfoForecast().get(0).getFeelsLike(),
-                    dto.getMainInfoForecast().get(0).getDesc().getDescription(),
+                    dto.getMainInfoForecast().get(2).getTemp(),
+                    dto.getMainInfoForecast().get(2).getPressure(),
+                    dto.getMainInfoForecast().get(2).getHumidity(),
+                    dto.getMainInfoForecast().get(2).getFeelsLike(),
+                    dto.getMainInfoForecast().get(2).getDesc().getDescription(),
                     dto.getLat(),
                     dto.getLon(),
-                    dto.getMainInfoForecast().get(0).getWindSpeed(),
-                    dto.getMainInfoForecast().get(0).getWindDeg(),
-                    dto.getMainInfoForecast().get(0).getDateTime());
+                    dto.getMainInfoForecast().get(2).getWindSpeed(),
+                    dto.getMainInfoForecast().get(2).getWindDeg(),
+                    dto.getMainInfoForecast().get(2).getDateTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
         }
     }
-
-    /*
-    forecast weather by location from service "Weather Bit"
-     */
-    public WeatherBitModel getForecastWeatherFromWBByLocation(Float lat, float lon) {
-        String url = "https://api.weatherbit.io/v2.0/forecast/daily?&lat=" + lat + "&lon=" + lon
-                + "&key=" + apiTokenWeatherBit;
-        return getWeatherBitModel(url);
-    }
-
 }

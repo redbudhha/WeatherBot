@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Data
 public class WeatherApiModel {
@@ -19,5 +20,4 @@ public class WeatherApiModel {
     private final Double windSpeed;
     private final Double windDeg;
     private LocalDateTime dateTime;
-
 }

@@ -1,6 +1,5 @@
 package com.example.weatherbot.app.utils;
 
-import com.example.weatherbot.app.bot.WeatherBot;
 import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.service.UserService;
@@ -88,7 +87,8 @@ public class TelegramFacade {
         }
         // если ни одно условие не подошло
         if (messageToUser.getText() == null) {
-            messageToUser.setText("This command isn't supported.");
+            messageToUser.setText("This command isn't supported. " +
+                    "If you want to find out the current weather or forecast, please, type the command /start");
 
         }
         return messageToUser.setChatId(update.getMessage().getChatId());
@@ -96,7 +96,7 @@ public class TelegramFacade {
 
     public SendMessage sendKeyBoardWithLocationInputChoice(long chatId) {
         InlineKeyboardButton location = new InlineKeyboardButton()
-                .setText("Send location")
+                .setText("Send geolocation")
                 .setCallbackData("location");
         InlineKeyboardButton city = new InlineKeyboardButton()
                 .setText("Send city name")
@@ -131,7 +131,7 @@ public class TelegramFacade {
                 .setText("Send geolocation"));
         List<KeyboardRow> rows = new ArrayList<>(Collections.singletonList(keyboardRow));
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup().setKeyboard(rows).setOneTimeKeyboard(true).setResizeKeyboard(true);
-        return new SendMessage().setChatId(chatId).setReplyMarkup(markup).setText("For sending geolocation click 'Send location'");
+        return new SendMessage().setChatId(chatId).setReplyMarkup(markup).setText("For sending location click 'Send geolocation'");
     }
 
     public SendMessage processCallBackQuery(CallbackQuery query) {

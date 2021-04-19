@@ -9,16 +9,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 public class WeatherBitModel {
-    private String cityName;
-    private Double temp;
-    private Integer pressure;
-    private Integer humidity;
-    private Double feelsLike;
-    private String condition;
-    private Float lat;
-    private Float lon;
-    private Double windSpeed;
-    private Double windDeg;
+    private final String cityName;
+    private final Double temp;
+    private final Integer pressure;
+    private final Integer humidity;
+    private final Double feelsLike;
+    private final String condition;
+    private final Float lat;
+    private final Float lon;
+    private final Double windSpeed;
+    private final Double windDeg;
     private LocalDateTime dateTime;
 
 

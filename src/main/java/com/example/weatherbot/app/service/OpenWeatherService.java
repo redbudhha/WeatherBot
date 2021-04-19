@@ -13,8 +13,11 @@ import java.util.Objects;
 
 @Service
 public class OpenWeatherService {
-    private final RestTemplate restTemplate;
     private final String apiTokenOpenWeather = "36daa3f6889a39abb62113bafa51611b";
+    private final String openWeatherCurrentURL = "http://api.openweathermap.org/data/2.5/weather?&units=metric&";
+    private final String openWeatherForecastURL = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&";
+    private final String unitsAndCnt = "&units=metric&cnt=16";
+    private final RestTemplate restTemplate;
 
 
     @Autowired
@@ -23,36 +26,27 @@ public class OpenWeatherService {
     }
 
     public OpenWeatherModel getCurrentByCity(String cityName) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&q=" + cityName + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherCurrentURL + "q=" + cityName + "&appid=" + apiTokenOpenWeather;
         System.out.println(cityName);
         return getCurrentOpenWeatherModel(url);
     }
 
-    /*
-    current weather by location name from service "Open Weather"
-     */
+
     public OpenWeatherModel getCurrentWeatherFromOWByLocation(Float lat, Float lon) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?&units=metric&lat=" + lat + "&lon=" + lon
-                + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherCurrentURL + "lat=" + lat + "&lon=" + lon + "&appid=" + apiTokenOpenWeather;
         return getCurrentOpenWeatherModel(url);
 
     }
 
-    /*
-    forecast weather for the next day from by city name service "Open Weather"
-     */
+
     public OpenWeatherModel getForecastWeatherFromOWByCity(String cityName) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&q=" + cityName + "&units=metric&cnt=16"
-                + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherForecastURL + "q=" + cityName + unitsAndCnt + "&appid=" + apiTokenOpenWeather;
         return getOpenWeatherModel(url);
     }
 
-    /*
-    forecast weather for the next day from by location service "Open Weather"
-     */
+
     public OpenWeatherModel getForecastWeatherFromOWByLocation(Float lat, Float lon) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast?&units=metric&lat=" + lat + "&lon=" + lon + "&cnt=16"
-                + "&appid=" + apiTokenOpenWeather;
+        String url = openWeatherForecastURL + "lat=" + lat + "&lon=" + lon + "&cnt=16" + "&appid=" + apiTokenOpenWeather;
         return getOpenWeatherModel(url);
     }
 
@@ -60,20 +54,21 @@ public class OpenWeatherService {
         OpenWeatherForecastDto dto = restTemplate.getForObject(url, OpenWeatherForecastDto.class);
         if (Objects.nonNull(dto)) {
             return new OpenWeatherModel(dto.getCity().getName(),
-                    dto.getHourlyArray().get(0).getMainMetrics().getTemp(),
-                    dto.getHourlyArray().get(0).getMainMetrics().getPressure(),
-                    dto.getHourlyArray().get(0).getMainMetrics().getHumidity(),
-                    dto.getHourlyArray().get(0).getMainMetrics().getFeelsLike(),
-                    dto.getHourlyArray().get(0).getWeather().get(0).getCondition(),
+                    dto.getHourlyArray().get(2).getMainMetrics().getTemp(),
+                    dto.getHourlyArray().get(2).getMainMetrics().getPressure(),
+                    dto.getHourlyArray().get(2).getMainMetrics().getHumidity(),
+                    dto.getHourlyArray().get(2).getMainMetrics().getFeelsLike(),
+                    dto.getHourlyArray().get(2).getWeather().get(0).getCondition(),
                     dto.getCity().getCoords().getLat(),
                     dto.getCity().getCoords().getLon(),
-                    dto.getHourlyArray().get(0).getWind().getSpeed(),
-                    dto.getHourlyArray().get(0).getWind().getDeg(),
-                    dto.getHourlyArray().get(0).getDateTime());
+                    dto.getHourlyArray().get(2).getWind().getSpeed(),
+                    dto.getHourlyArray().get(2).getWind().getDeg(),
+                    dto.getHourlyArray().get(2).getDateTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");
         }
     }
+
     private OpenWeatherModel getCurrentOpenWeatherModel(String url) {
         OpenWeatherCurrentDto dto = restTemplate.getForObject(url, OpenWeatherCurrentDto.class);
         if (Objects.nonNull(dto)) {

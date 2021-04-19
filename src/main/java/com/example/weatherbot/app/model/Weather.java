@@ -14,15 +14,15 @@ import java.time.LocalDate;
 public class Weather {
     @Id
     private String id;
-    private final String cityName;
+    private String cityName;
     private final Double temp;
     private final Integer pressure;
     private final Integer humidity;
     private final Double speed;
-    private Double feelsLike;
-    private String condition;
-    private Float lat;
-    private Float lon;
+    private final Double feelsLike;
+    private final String condition;
+    private final Float lat;
+    private final Float lon;
     private LocalDate date;
     private boolean current;
 
@@ -41,15 +41,14 @@ public class Weather {
 
     @Override
     public String toString() {
-        return " City name: " + this.cityName +
+        return " Date: " + this.date +
+                "\nCity name: " + this.cityName +
                 "\n" +
                 "\nTemperature = " + new DecimalFormat("0").format(this.temp) + "°C" +
-                "\nPressure = " + this.pressure + " mm. of mercury" +
-                "\nHumidity = " + this.humidity + "%" +
-                "\nWind speed = " + new DecimalFormat("0").format(this.speed) + " m\\s" +
                 "\nFeels like = " + new DecimalFormat("0").format(this.feelsLike) + "°C" +
                 "\nCondition = " + this.condition +
-                "\n" + this.date;
-
+                "\nWind speed = " + new DecimalFormat("0").format(this.speed) + " m\\s" +
+                "\nPressure = " + this.pressure + " mm. of mercury" +
+                "\nHumidity = " + this.humidity + "%";
     }
 }

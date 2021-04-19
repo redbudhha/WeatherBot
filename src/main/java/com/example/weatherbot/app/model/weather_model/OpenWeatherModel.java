@@ -1,10 +1,10 @@
 package com.example.weatherbot.app.model.weather_model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Data
 public class OpenWeatherModel {
@@ -12,13 +12,12 @@ public class OpenWeatherModel {
     private final Double temp;
     private final Integer pressure;
     private final Integer humidity;
-    private Double feelsLike;
-    private String condition;
-    private Float lat;
-    private Float lon;
-    private Double windSpeed;
-    private Double windDeg;
+    private final Double feelsLike;
+    private final String condition;
+    private final Float lat;
+    private final Float lon;
+    private final Double windSpeed;
+    private final Double windDeg;
     private LocalDateTime dateTime;
-
 
 }

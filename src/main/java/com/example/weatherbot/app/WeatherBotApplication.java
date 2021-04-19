@@ -11,8 +11,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
 
 @EnableMongoRepositories
-@EnableScheduling
+
 @SpringBootApplication
+@EnableScheduling
 public class WeatherBotApplication implements CommandLineRunner {
     @Autowired
     MongoTemplate template;
