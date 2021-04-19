@@ -44,8 +44,8 @@ public class WeatherService {
             }
             if (date.equals(LocalDate.now())) {
                 return weatherForecast.stream().filter(Weather::isCurrent).findAny().orElse(null);
-            } else {
-                return weatherList.stream().findAny().orElse(null);
+            } else  {
+                return weatherForecast.stream().filter(weather -> !weather.isCurrent()).findAny().orElse(null);
             }
         } else {
             return null;

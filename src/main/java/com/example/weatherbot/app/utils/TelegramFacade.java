@@ -1,5 +1,6 @@
 package com.example.weatherbot.app.utils;
 
+import com.example.weatherbot.app.bot.WeatherBot;
 import com.example.weatherbot.app.model.Weather;
 import com.example.weatherbot.app.model.db_model.User;
 import com.example.weatherbot.app.service.UserService;
@@ -74,6 +75,7 @@ public class TelegramFacade {
                     if (update.getMessage().hasLocation()) {
                         Location location = update.getMessage().getLocation();
                         user.setLocation(new User.Location(location.getLatitude(), location.getLongitude()));
+                        user.setCity(null);
                         userService.update(user);
                     }
                 } else {
@@ -162,7 +164,6 @@ public class TelegramFacade {
             case "no": {
                 return new SendMessage().setChatId(chatId).setText("For getting weather send /start");
             }
-
             default:
                 User user = userService.findUserByChatId(chatId);
                 try {

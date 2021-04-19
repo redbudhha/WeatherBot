@@ -1,6 +1,7 @@
 package com.example.weatherbot.app.service;
 
 import com.example.weatherbot.app.model.db_model.User;
+import com.mongodb.client.result.DeleteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
