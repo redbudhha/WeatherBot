@@ -71,15 +71,15 @@ public class WeatherBitService {
         WeatherBitForecastDto dto = restTemplate.getForObject(url, WeatherBitForecastDto.class);
         if (Objects.nonNull(dto)) {
             return new WeatherBitModel(dto.getCityName(),
-                    dto.getMainInfoForecast().get(2).getTemp(),
-                    dto.getMainInfoForecast().get(2).getPressure(),
-                    dto.getMainInfoForecast().get(2).getHumidity(),
-                    dto.getMainInfoForecast().get(2).getFeelsLike(),
-                    dto.getMainInfoForecast().get(2).getDesc().getDescription(),
+                    dto.getMainInfoForecast().get(1).getTemp(),
+                    dto.getMainInfoForecast().get(1).getPressure(),
+                    dto.getMainInfoForecast().get(1).getHumidity(),
+                    dto.getMainInfoForecast().get(1).getFeelsLike(),
+                    dto.getMainInfoForecast().get(1).getDesc().getDescription(),
                     dto.getLat(),
                     dto.getLon(),
-                    dto.getMainInfoForecast().get(2).getWindSpeed(),
-                    dto.getMainInfoForecast().get(2).getWindDeg(),
+                    dto.getMainInfoForecast().get(1).getWindSpeed(),
+                    dto.getMainInfoForecast().get(1).getWindDeg(),
                     dto.getMainInfoForecast().get(2).getDateTime());
         } else {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Wrong city name");

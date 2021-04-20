@@ -49,6 +49,7 @@ public class Weather {
                 "\nCondition = " + this.condition +
                 "\nWind speed = " + new DecimalFormat("0").format(this.speed) + " m\\s" +
                 "\nPressure = " + this.pressure + " mm. of mercury" +
-                "\nHumidity = " + this.humidity + "%";
+                "\nHumidity = " + this.humidity + "%" +
+                "\n";
     }
 }

@@ -120,7 +120,7 @@ public class OpenWeatherServiceTest {
         when(this.restTemplate.getForObject(anyString(), any(), (Object[]) any()))
                 .thenReturn(openWeatherCurrentDto);
         OpenWeatherModel actualCurrentWeatherFromOWByLocation = this.openWeatherService
-                .getCurrentWeatherFromOWByLocation(10.0f, 10.0f);
+                .getCurrentWeatherFromOWByLocation(60.0f, 30.0f);
         assertEquals("Saint-Petersburg", actualCurrentWeatherFromOWByLocation.getCityName());
         assertEquals(
                 "OpenWeatherModel(cityName=Saint-Petersburg, temp=null, pressure=null, humidity=null," +

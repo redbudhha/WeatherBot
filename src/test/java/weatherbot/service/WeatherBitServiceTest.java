@@ -1,6 +1,5 @@
 package weatherbot.service;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -12,8 +11,6 @@ import static org.mockito.Mockito.when;
 import com.example.weatherbot.app.dto.weatherbitdto.WeatherBitInfo;
 import com.example.weatherbot.app.dto.weatherbitdto.WeatherDescription;
 import com.example.weatherbot.app.dto.weatherbitdto.current.WeatherBitCurrentDto;
-import com.example.weatherbot.app.dto.weatherbitdto.forecast.WeatherBitForecastDto;
-import com.example.weatherbot.app.dto.weatherbitdto.forecast.WeatherBitInfoForecast;
 import com.example.weatherbot.app.model.weather_model.WeatherBitModel;
 
 import java.util.ArrayList;
@@ -92,37 +89,4 @@ public class WeatherBitServiceTest {
     }
 
 
-    @Test
-    public void getForecastWeatherFromWBByLocationTestDetailed() throws RestClientException {
-        WeatherBitInfoForecast weatherBitInfoForecast = new WeatherBitInfoForecast();
-        weatherBitInfoForecast.setDesc(new WeatherDescription());
-
-        ArrayList<WeatherBitInfoForecast> weatherBitInfoForecastList = new ArrayList<WeatherBitInfoForecast>();
-        weatherBitInfoForecastList.add(weatherBitInfoForecast);
-        WeatherBitForecastDto weatherBitForecastDto = mock(WeatherBitForecastDto.class);
-        when(weatherBitForecastDto.getLon()).thenReturn(10.0f);
-        when(weatherBitForecastDto.getLat()).thenReturn(10.0f);
-        when(weatherBitForecastDto.getMainInfoForecast()).thenReturn(weatherBitInfoForecastList);
-        when(weatherBitForecastDto.getCityName()).thenReturn("Saint-Petersburg");
-        when(this.restTemplate.getForObject(anyString(), any(), (Object[]) any()))
-                .thenReturn(weatherBitForecastDto);
-        WeatherBitModel actualForecastWeatherFromWBByLocation = this.weatherBitService
-                .getForecastWeatherFromWBByLocation(10.0f, 10.0f);
-        assertEquals("Saint-Petersburg", actualForecastWeatherFromWBByLocation.getCityName());
-        assertNull(actualForecastWeatherFromWBByLocation.getWindSpeed());
-        assertNull(actualForecastWeatherFromWBByLocation.getWindDeg());
-        assertNull(actualForecastWeatherFromWBByLocation.getTemp());
-        assertNull(actualForecastWeatherFromWBByLocation.getPressure());
-        assertEquals(10.0f, actualForecastWeatherFromWBByLocation.getLon(), 0.0f);
-        assertEquals(10.0f, actualForecastWeatherFromWBByLocation.getLat(), 0.0f);
-        assertNull(actualForecastWeatherFromWBByLocation.getHumidity());
-        assertNull(actualForecastWeatherFromWBByLocation.getFeelsLike());
-        assertNull(actualForecastWeatherFromWBByLocation.getDateTime());
-        assertNull(actualForecastWeatherFromWBByLocation.getCondition());
-        verify(this.restTemplate).getForObject(anyString(), any(), (Object[]) any());
-        verify(weatherBitForecastDto, times(8)).getMainInfoForecast();
-        verify(weatherBitForecastDto).getLon();
-        verify(weatherBitForecastDto).getCityName();
-        verify(weatherBitForecastDto).getLat();
-    }
 }
